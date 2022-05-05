@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { CountryService } from './country.service';
 import { AuthGuard } from '../user/guards/auth.guard';
 import { CreateCountryDto } from './dto/createCountry.dto';
@@ -43,5 +43,21 @@ export class CountryController {
   @UseGuards(AuthGuard)
   async deleteCountry(@Param('id') countryId: number) {
     return this.countryService.deleteCountry(countryId);
+  }
+
+  @Post(':countryId/city/:cityId')
+  @UseGuards(AuthGuard)
+  async addCityToCountry(@Param('countryId', ParseIntPipe) countryId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<CountryResponseInterface> {
+    const country = await this.countryService.addCityToCountry(countryId, cityId);
+
+    return this.countryService.buildCountryResponse(country);
+  }
+
+  @Delete(':countryId/city/:cityId')
+  @UseGuards(AuthGuard)
+  async deleteCityFromCountry(@Param('countryId', ParseIntPipe) countryId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<CountryResponseInterface> {
+    const country = await this.countryService.deleteCityFromCountry(countryId, cityId);
+
+    return this.countryService.buildCountryResponse(country);
   }
 }
