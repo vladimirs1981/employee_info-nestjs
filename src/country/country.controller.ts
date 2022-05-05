@@ -10,6 +10,7 @@ export class CountryController {
   constructor(private readonly countryService: CountryService) {}
 
   @Get()
+  @UseGuards(AuthGuard)
   async findAll(): Promise<{ countries: CountryEntity[] }> {
     const countries = await this.countryService.findAll();
     return {

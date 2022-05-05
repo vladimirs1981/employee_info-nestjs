@@ -9,7 +9,9 @@ export class CountryService {
   constructor(@InjectRepository(CountryEntity) private readonly countryRepository: Repository<CountryEntity>) {}
 
   async findAll(): Promise<CountryEntity[]> {
-    return await this.countryRepository.find();
+    return await this.countryRepository.find({
+      relations: ['cities'],
+    });
   }
 
   async findCountryById(id: number): Promise<CountryEntity> {

@@ -13,6 +13,6 @@ export class CityEntity {
   @OneToMany(() => UserEntity, user => user.city)
   users: UserEntity[];
 
-  @ManyToOne(() => CountryEntity, country => country.cities, { eager: true })
+  @ManyToOne(() => CountryEntity, country => country.cities)
   country: CountryEntity;
 }
