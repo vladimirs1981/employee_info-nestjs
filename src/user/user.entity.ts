@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '@app/user/types/userRole.enum';
+import { CityEntity } from '@app/city/city.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -27,4 +28,7 @@ export class UserEntity {
 
   @Column({ default: '' })
   plan: string;
+
+  @ManyToOne(() => CityEntity, city => city.users)
+  city: CityEntity;
 }
