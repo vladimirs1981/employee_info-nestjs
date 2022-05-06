@@ -1,4 +1,4 @@
-import { ArgumentMetadata, BadGatewayException, PipeTransform } from '@nestjs/common';
+import { BadGatewayException, PipeTransform } from '@nestjs/common';
 import { UserRole } from '../types/userRole.enum';
 
 export class UserRoleValidationPipe implements PipeTransform {
@@ -16,7 +16,6 @@ export class UserRoleValidationPipe implements PipeTransform {
 
   private isRoleValid(role: any) {
     const idx = this.allowedRoles.indexOf(role);
-    console.log(idx);
     return idx !== -1;
   }
 }

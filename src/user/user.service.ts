@@ -7,6 +7,7 @@ import { sign } from 'jsonwebtoken';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
 import { UserRole } from '@app/user/types/userRole.enum';
+import { UserSeniority } from './types/userSeniority.enum';
 
 @Injectable()
 export class UserService {
@@ -37,6 +38,13 @@ export class UserService {
   async updateUserRole(currentUserId: number, role: UserRole): Promise<UserEntity> {
     const user = await this.findById(currentUserId);
     user.role = role;
+    await this.userRepository.save(user);
+    return user;
+  }
+
+  async updateUserSeniority(currentUserId: number, seniority: UserSeniority): Promise<UserEntity> {
+    const user = await this.findById(currentUserId);
+    user.seniority = seniority;
     await this.userRepository.save(user);
     return user;
   }

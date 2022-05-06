@@ -8,6 +8,8 @@ import { AuthGuard } from './guards/auth.guard';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserRoleValidationPipe } from './pipes/userRole.validation.pipe';
 import { UserRole } from './types/userRole.enum';
+import { UserSeniority } from './types/userSeniority.enum';
+import { UserSeniorityValidationPipe } from './pipes/userSeniority.validatrion.pipe';
 
 @Controller()
 export class UserController {
@@ -38,6 +40,14 @@ export class UserController {
   @UseGuards(AuthGuard)
   async updateCurrentUserRole(@User('id') currentUserId: number, @Body('role', UserRoleValidationPipe) role: UserRole): Promise<UserResponseInterface> {
     const user = await this.userService.updateUserRole(currentUserId, role);
+
+    return this.userService.buildUserResponse(user);
+  }
+
+  @Patch('user/seniority')
+  @UseGuards(AuthGuard)
+  async updateCurrentUserSeniority(@User('id') currentUserId: number, @Body('seniority', UserSeniorityValidationPipe) seniority: UserSeniority): Promise<UserResponseInterface> {
+    const user = await this.userService.updateUserSeniority(currentUserId, seniority);
 
     return this.userService.buildUserResponse(user);
   }

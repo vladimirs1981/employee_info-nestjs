@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { CityEntity } from '@app/city/city.entity';
+import { UserSeniority } from './types/userSeniority.enum';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -25,6 +26,13 @@ export class UserEntity {
     default: UserRole.EMPLOYEE,
   })
   role: UserRole;
+
+  @Column({
+    type: 'enum',
+    enum: UserSeniority,
+    default: UserSeniority.JUNIOR,
+  })
+  seniority: UserSeniority;
 
   @Column({ default: '' })
   plan: string;

@@ -23,10 +23,10 @@ export class CityController {
     return this.cityService.buildCityResponse(city);
   }
 
-  @Post(':countryId')
+  @Post()
   @UseGuards(AuthGuard)
-  async create(@Body('city') createCityDto: CreateCityDto, @Param('countryId', ParseIntPipe) countryId: number): Promise<CityResponseInterface> {
-    const city = await this.cityService.createCity(createCityDto, countryId);
+  async create(@Body('city') createCityDto: CreateCityDto): Promise<CityResponseInterface> {
+    const city = await this.cityService.createCity(createCityDto);
     return this.cityService.buildCityResponse(city);
   }
 

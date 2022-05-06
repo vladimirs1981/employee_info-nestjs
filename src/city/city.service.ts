@@ -23,17 +23,9 @@ export class CityService {
     return this.cityRepository.findOne(id);
   }
 
-  async createCity(createCityDto: CreateCityDto, countryId: number): Promise<CityEntity> {
-    const country = await this.countryRepository.findOne(countryId);
-
-    if (!country) {
-      throw new HttpException('Country not found', HttpStatus.NOT_FOUND);
-    }
-
+  async createCity(createCityDto: CreateCityDto): Promise<CityEntity> {
     const city = new CityEntity();
     Object.assign(city, createCityDto);
-
-    city.country = country;
 
     return await this.cityRepository.save(city);
   }
