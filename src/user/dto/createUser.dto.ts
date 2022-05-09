@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { Contains, IsEmail, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -9,5 +9,6 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsEmail()
+  @Contains('@quantox.com')
   readonly email: string;
 }

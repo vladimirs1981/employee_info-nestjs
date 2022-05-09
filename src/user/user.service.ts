@@ -10,6 +10,7 @@ import { UserRole } from '@app/user/types/userRole.enum';
 import { UserSeniority } from './types/userSeniority.enum';
 import { CityEntity } from '../city/city.entity';
 import { TechnologyEntity } from '../technology/technology.entity';
+import { ProjectEntity } from '../project/project.entity';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,88 @@ export class UserService {
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(CityEntity) private readonly cityRepository: Repository<CityEntity>,
     @InjectRepository(TechnologyEntity) private readonly technologyRepository: Repository<TechnologyEntity>,
+    @InjectRepository(ProjectEntity) private readonly projectRepository: Repository<ProjectEntity>,
   ) {}
+
+  async findAllUsers(): Promise<UserEntity[]> {
+    return this.userRepository.find();
+  }
+
+  async findAllEmployees(): Promise<UserEntity[]> {
+    return this.userRepository.find({
+      where: {
+        role: UserRole.EMPLOYEE,
+      },
+    });
+  }
+
+  async findAllAdmins(): Promise<UserEntity[]> {
+    return this.userRepository.find({
+      where: {
+        role: UserRole.ADMIN,
+      },
+    });
+  }
+
+  async findAllPMs(): Promise<UserEntity[]> {
+    return this.userRepository.find({
+      where: {
+        role: UserRole.PROJECT_MANAGER,
+      },
+    });
+  }
+
+  async createAdmin(userId: number): Promise<UserEntity> {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.role === UserRole.ADMIN) {
+      throw new HttpException('User is already an admin', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    user.role = UserRole.ADMIN;
+    return this.userRepository.save(user);
+  }
+
+  async removeFromAdmins(userId: number): Promise<UserEntity> {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    user.role = UserRole.EMPLOYEE;
+    return this.userRepository.save(user);
+  }
+
+  async removeFromPMs(userId: number): Promise<UserEntity> {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    user.role = UserRole.EMPLOYEE;
+    return this.userRepository.save(user);
+  }
+
+  async createPm(userId: number): Promise<UserEntity> {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.role === UserRole.PROJECT_MANAGER) {
+      throw new HttpException('User is already a project manager', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    user.role = UserRole.PROJECT_MANAGER;
+    return this.userRepository.save(user);
+  }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     const userByEmail = await this.userRepository.findOne({
@@ -61,10 +143,24 @@ export class UserService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     const city = await this.cityRepository.findOne(cityId);
-    if (!user) {
+    if (!city) {
       throw new HttpException('City not found', HttpStatus.NOT_FOUND);
     }
     user.city = city;
+
+    return this.userRepository.save(user);
+  }
+
+  async addProjectToUser(currentUserId: number, projectId: number): Promise<UserEntity> {
+    const user = await this.userRepository.findOne(currentUserId);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    const project = await this.projectRepository.findOne(projectId);
+    if (!project) {
+      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+    }
+    user.project = project;
 
     return this.userRepository.save(user);
   }

@@ -1,4 +1,4 @@
-import { IsEmail } from 'class-validator';
+import { Contains, IsEmail } from 'class-validator';
 
 export class UpdateUserDto {
   readonly firstName: string;
@@ -6,6 +6,7 @@ export class UpdateUserDto {
   readonly lastName: string;
 
   @IsEmail()
+  @Contains('@quantox.com')
   readonly email: string;
 
   readonly plan: string;

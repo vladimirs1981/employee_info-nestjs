@@ -6,9 +6,10 @@ import { UserEntity } from '@app/user/user.entity';
 import { AuthGuard } from '@app/user/guards/auth.guard';
 import { CityEntity } from '../city/city.entity';
 import { TechnologyEntity } from '../technology/technology.entity';
+import { ProjectEntity } from '../project/project.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, CityEntity, TechnologyEntity])],
+  imports: [TypeOrmModule.forFeature([UserEntity, CityEntity, TechnologyEntity, ProjectEntity])],
   controllers: [UserController],
   providers: [UserService, AuthGuard],
   exports: [UserService],

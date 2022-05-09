@@ -8,6 +8,8 @@ import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
 import { CityModule } from '@app/city/city.module';
 import * as ormconfig from '@app/ormconfig';
 import { TechnologyModule } from '@app/technology/techology.module';
+import { ProjectModule } from '@app/project/project.module';
+import { ProjectManagerModule } from './auth/projectManager/projectManager.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { TechnologyModule } from '@app/technology/techology.module';
     UserModule,
     AuthModule,
     TechnologyModule,
+    ProjectModule,
+    ProjectManagerModule,
   ],
 })
 export class AppModule {

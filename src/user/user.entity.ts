@@ -4,6 +4,7 @@ import { CityEntity } from '@app/city/city.entity';
 import { UserSeniority } from './types/userSeniority.enum';
 import { CountryEntity } from '../country/country.entity';
 import { TechnologyEntity } from '../technology/technology.entity';
+import { ProjectEntity } from '../project/project.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -41,6 +42,9 @@ export class UserEntity {
 
   @ManyToOne(() => CityEntity, city => city.users)
   city: CityEntity;
+
+  @ManyToOne(() => ProjectEntity, project => project.employees)
+  project: ProjectEntity;
 
   @ManyToMany(() => TechnologyEntity)
   @JoinTable()
