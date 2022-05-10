@@ -10,6 +10,7 @@ import * as ormconfig from '@app/ormconfig';
 import { TechnologyModule } from '@app/technology/techology.module';
 import { ProjectModule } from '@app/project/project.module';
 import { ProjectManagerModule } from '@app/projectManager/projectManager.module';
+import { NoteModule } from '@app/note/note.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ProjectManagerModule } from '@app/projectManager/projectManager.module'
     TechnologyModule,
     ProjectModule,
     ProjectManagerModule,
+    NoteModule,
   ],
 })
 export class AppModule {

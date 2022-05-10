@@ -202,7 +202,7 @@ export class UserService {
       throw new HttpException('Technology not found', HttpStatus.NOT_FOUND);
     }
 
-    const technologyIndex = await user.technologies.findIndex(techInUser => techInUser.id === technology.id);
+    const technologyIndex = user.technologies.findIndex(techInUser => techInUser.id === technology.id);
     if (technologyIndex >= 0) {
       user.technologies.splice(technologyIndex, 1);
       await this.userRepository.save(user);

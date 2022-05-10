@@ -1,10 +1,11 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { CityEntity } from '@app/city/city.entity';
 import { UserSeniority } from './types/userSeniority.enum';
 import { CountryEntity } from '../country/country.entity';
 import { TechnologyEntity } from '../technology/technology.entity';
 import { ProjectEntity } from '../project/project.entity';
+import { NoteEntity } from '../note/note.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -49,4 +50,7 @@ export class UserEntity {
   @ManyToMany(() => TechnologyEntity)
   @JoinTable()
   technologies: TechnologyEntity[];
+
+  @OneToMany(() => NoteEntity, note => note.employee)
+  notes: NoteEntity[];
 }
