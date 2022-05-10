@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from '../../user/user.entity';
 import { ProjectManagerController } from './projectManager.controller';
 import { ProjectManagerService } from './projectManager.service';
-import { CityEntity } from '../../city/city.entity';
+import { TechnologyEntity } from '../technology/technology.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, CityEntity])],
+  imports: [TypeOrmModule.forFeature([TechnologyEntity])],
   controllers: [ProjectManagerController],
   providers: [ProjectManagerService],
 })

@@ -9,7 +9,7 @@ import { CityModule } from '@app/city/city.module';
 import * as ormconfig from '@app/ormconfig';
 import { TechnologyModule } from '@app/technology/techology.module';
 import { ProjectModule } from '@app/project/project.module';
-import { ProjectManagerModule } from './auth/projectManager/projectManager.module';
+import { ProjectManagerModule } from '@app/projectManager/projectManager.module';
 
 @Module({
   imports: [
