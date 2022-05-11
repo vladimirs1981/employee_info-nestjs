@@ -20,7 +20,11 @@ export class CityService {
   }
 
   async findCityById(id: number): Promise<CityEntity> {
-    return this.cityRepository.findOne(id);
+    const city = await this.cityRepository.findOne(id);
+    if (!city) {
+      throw new HttpException('City not found', HttpStatus.NOT_FOUND);
+    }
+    return city;
   }
 
   async createCity(createCityDto: CreateCityDto): Promise<CityEntity> {

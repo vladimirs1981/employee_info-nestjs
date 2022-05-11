@@ -10,6 +10,7 @@ import { UserRoleValidationPipe } from './pipes/userRole.validation.pipe';
 import { UserRole } from './types/userRole.enum';
 import { UserSeniority } from './types/userSeniority.enum';
 import { UserSeniorityValidationPipe } from './pipes/userSeniority.validatrion.pipe';
+import { Roles } from './decorators/userRoles.decorator';
 
 @Controller()
 export class UserController {
@@ -18,6 +19,7 @@ export class UserController {
   // get all users
   @Get('users')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.PROJECT_MANAGER, UserRole.ADMIN)
   async getAllUsers(): Promise<{ users: UserEntity[] }> {
     const users = await this.userService.findAllUsers();
     return { users };
@@ -26,6 +28,7 @@ export class UserController {
   // create new user
   @Post('users')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   @UsePipes(new ValidationPipe())
   async createUser(@Body('user') createUserDto: CreateUserDto): Promise<UserResponseInterface> {
     const user = await this.userService.createUser(createUserDto);
@@ -35,6 +38,7 @@ export class UserController {
   // edit user
   @Put('users/:id')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async updateUser(@Param('id') id: number, @Body('user') updateUserDto: UpdateUserDto): Promise<UserResponseInterface> {
     const user = await this.userService.updateUser(id, updateUserDto);
 
@@ -44,6 +48,7 @@ export class UserController {
   // add seniority to user
   @Patch('users/seniority/:userId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async updateUserSeniority(
     @Param('userId', ParseIntPipe) userId: number,
     @Body('seniority', UserSeniorityValidationPipe) seniority: UserSeniority,
@@ -56,6 +61,7 @@ export class UserController {
   // add city to user
   @Post('users/:userId/city/:cityId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async addCityToUser(@Param('userId', ParseIntPipe) userId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<UserResponseInterface> {
     const user = await this.userService.addCityToUser(userId, cityId);
 
@@ -74,6 +80,7 @@ export class UserController {
   // add technology to user
   @Post('/users/:userId/technology/:technologyId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async addTechnologyToUser(@Param('userId', ParseIntPipe) userId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
     const user = await this.userService.addTechnologyToUser(userId, technologyId);
 
@@ -83,6 +90,7 @@ export class UserController {
   // remove technology from user
   @Delete('/users/:userId/technology/:technologyId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async removeTechnologyFromUser(@Param('userId', ParseIntPipe) userId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
     const user = await this.userService.removeTechnologyFromUser(userId, technologyId);
 
@@ -94,6 +102,7 @@ export class UserController {
   // get all employees
   @Get('users/employees')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async getAllEmployees(): Promise<{ employees: UserEntity[] }> {
     const employees = await this.userService.findAllEmployees();
     return { employees };
@@ -104,6 +113,7 @@ export class UserController {
   // get all admins
   @Get('users/admins')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async getAllAdmins(): Promise<{ admins: UserEntity[] }> {
     const admins = await this.userService.findAllAdmins();
     return { admins };
@@ -112,6 +122,7 @@ export class UserController {
   // create admin
   @Post('users/admins/:userId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async createAdmin(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
     const user = await this.userService.createAdmin(userId);
 
@@ -121,6 +132,7 @@ export class UserController {
   // remove from admins
   @Put('users/admins/:userId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async removeUserFromAdmins(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
     const user = await this.userService.removeFromAdmins(userId);
 
@@ -132,6 +144,7 @@ export class UserController {
   // get all project managers
   @Get('users/pm')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async getAllPMs(): Promise<{ project_managers: UserEntity[] }> {
     const project_managers = await this.userService.findAllPMs();
     return { project_managers };
@@ -140,6 +153,7 @@ export class UserController {
   //create project manager
   @Post('users/pm/:userId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async createPm(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
     const user = await this.userService.createPm(userId);
 
@@ -149,6 +163,7 @@ export class UserController {
   // remove from project managers
   @Put('users/pm/:userId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async removeUserFromPMs(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
     const user = await this.userService.removeFromPMs(userId);
 
@@ -160,6 +175,7 @@ export class UserController {
   // get current user
   @Get('user')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async currentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
     return this.userService.buildUserResponse(user);
   }
@@ -167,6 +183,7 @@ export class UserController {
   // edit current user
   @Put('user')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUser(@User('id') currentUserId: number, @Body('user') updateUserDto: UpdateUserDto): Promise<UserResponseInterface> {
     const user = await this.userService.updateUser(currentUserId, updateUserDto);
 
@@ -176,6 +193,7 @@ export class UserController {
   // edit current user role
   @Patch('user/role')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUserRole(@User('id') currentUserId: number, @Body('role', UserRoleValidationPipe) role: UserRole): Promise<UserResponseInterface> {
     const user = await this.userService.updateUserRole(currentUserId, role);
 
@@ -185,6 +203,7 @@ export class UserController {
   // edit current user seniority (intern, junior, medior, senior)
   @Patch('user/seniority')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUserSeniority(@User('id') currentUserId: number, @Body('seniority', UserSeniorityValidationPipe) seniority: UserSeniority): Promise<UserResponseInterface> {
     const user = await this.userService.updateUserSeniority(currentUserId, seniority);
 
@@ -194,6 +213,7 @@ export class UserController {
   // add city to current user
   @Post('user/city/:cityId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async addCityToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<UserResponseInterface> {
     const user = await this.userService.addCityToUser(currentUserId, cityId);
 
@@ -203,6 +223,7 @@ export class UserController {
   //add project to current user
   @Post('user/project/:projectId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async addProjectToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('projectId', ParseIntPipe) projectId: number): Promise<UserResponseInterface> {
     const user = await this.userService.addProjectToUser(currentUserId, projectId);
 
@@ -212,6 +233,7 @@ export class UserController {
   // add technology to current user
   @Post('/user/technology/:technologyId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async addTechnologyToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
     const user = await this.userService.addTechnologyToUser(currentUserId, technologyId);
 
@@ -221,6 +243,7 @@ export class UserController {
   // remove technology from current user
   @Delete('/user/technology/:technologyId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async removeTechnologyFromCurrentUser(
     @User('id', ParseIntPipe) currentUserId: number,
     @Param('technologyId', ParseIntPipe) technologyId: number,

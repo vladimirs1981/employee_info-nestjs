@@ -4,6 +4,8 @@ import { AuthGuard } from '../user/guards/auth.guard';
 import { CreateCountryDto } from './dto/createCountry.dto';
 import { CountryResponseInterface } from './types/countryResponse.interface';
 import { CountryEntity } from '@app/country/country.entity';
+import { Roles } from '@app/user/decorators/userRoles.decorator';
+import { UserRole } from '@app/user/types/userRole.enum';
 
 @Controller('countries')
 export class CountryController {
@@ -11,6 +13,7 @@ export class CountryController {
 
   @Get()
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async findAll(): Promise<{ countries: CountryEntity[] }> {
     const countries = await this.countryService.findAll();
     return {
@@ -20,6 +23,7 @@ export class CountryController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async findOneById(@Param('id') countryId: number): Promise<CountryResponseInterface> {
     const country = await this.countryService.findCountryById(countryId);
     return this.countryService.buildCountryResponse(country);
@@ -27,6 +31,7 @@ export class CountryController {
 
   @Post()
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async create(@Body('country') createCountryDto: CreateCountryDto): Promise<CountryResponseInterface> {
     const country = await this.countryService.createCountry(createCountryDto);
     return this.countryService.buildCountryResponse(country);
@@ -34,6 +39,7 @@ export class CountryController {
 
   @Put(':id')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async updateCountry(@Param('id') countryId: number, @Body('country') updateCountryDto: CreateCountryDto): Promise<CountryResponseInterface> {
     const country = await this.countryService.updateCountry(countryId, updateCountryDto);
     return this.countryService.buildCountryResponse(country);
@@ -41,12 +47,14 @@ export class CountryController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async deleteCountry(@Param('id') countryId: number) {
     return this.countryService.deleteCountry(countryId);
   }
 
   @Post(':countryId/city/:cityId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async addCityToCountry(@Param('countryId', ParseIntPipe) countryId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<CountryResponseInterface> {
     const country = await this.countryService.addCityToCountry(countryId, cityId);
 
@@ -55,6 +63,7 @@ export class CountryController {
 
   @Delete(':countryId/city/:cityId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async deleteCityFromCountry(@Param('countryId', ParseIntPipe) countryId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<CountryResponseInterface> {
     const country = await this.countryService.deleteCityFromCountry(countryId, cityId);
 

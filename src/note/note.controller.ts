@@ -5,6 +5,8 @@ import { AuthGuard } from '@app/user/guards/auth.guard';
 import { User } from '@app/user/decorators/user.decorator';
 import { CreateNoteDto } from './dto/createNote.dto';
 import { NoteResponseInterface } from './types/noteResponse.interface';
+import { Roles } from '@app/user/decorators/userRoles.decorator';
+import { UserRole } from '@app/user/types/userRole.enum';
 
 @Controller('notes')
 export class NoteController {
@@ -12,6 +14,7 @@ export class NoteController {
 
   @Get()
   @UseGuards(AuthGuard)
+  @Roles(UserRole.PROJECT_MANAGER)
   async findAll(): Promise<NotesResponseInterface> {
     const notes = await this.noteService.findAll();
     return { notes };
@@ -19,6 +22,7 @@ export class NoteController {
 
   @Post(':employeeId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.PROJECT_MANAGER)
   async create(
     @User('id', ParseIntPipe) currentUserId: number,
     @Body('note') createNoteDto: CreateNoteDto,

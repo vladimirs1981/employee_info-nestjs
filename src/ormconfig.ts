@@ -15,4 +15,4 @@ const config: ConnectionOptions = {
   },
 };
 
-export = config;
+export default config;

@@ -4,11 +4,14 @@ import { ProjectEntity } from './project.entity';
 import { AuthGuard } from '../user/guards/auth.guard';
 import { CreateProjectDto } from './dto/createProject.dto';
 import { ProjectResponseInterface } from './types/projectResponse.interface';
+import { Roles } from '@app/user/decorators/userRoles.decorator';
+import { UserRole } from '@app/user/types/userRole.enum';
 
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectsService: ProjectService) {}
   @Get()
+  @Roles(UserRole.ADMIN)
   async getAll(): Promise<{ projects: ProjectEntity[] }> {
     const projects = await this.projectsService.findAll();
 
@@ -17,6 +20,7 @@ export class ProjectController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async getOneById(@Param('id', ParseIntPipe) id: number): Promise<ProjectResponseInterface> {
     const project = await this.projectsService.findProjectById(id);
     return this.projectsService.buildProjectResponse(project);
@@ -24,6 +28,7 @@ export class ProjectController {
 
   @Post()
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async createProject(@Body('project') createProjectDto: CreateProjectDto): Promise<ProjectResponseInterface> {
     const project = await this.projectsService.createProject(createProjectDto);
 
@@ -32,6 +37,7 @@ export class ProjectController {
 
   @Put(':id')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async updateProject(@Body('project') createProjectDto: CreateProjectDto, @Param('id', ParseIntPipe) id: number): Promise<ProjectResponseInterface> {
     const project = await this.projectsService.updateProject(createProjectDto, id);
     return this.projectsService.buildProjectResponse(project);
@@ -39,12 +45,14 @@ export class ProjectController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async deleteProject(@Param('id', ParseIntPipe) id: number) {
     return this.projectsService.deleteProject(id);
   }
 
   @Post(':id/project_manager/:pmId')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async addProjectManagerToProject(@Param('id', ParseIntPipe) id: number, @Param('pmId', ParseIntPipe) pmId: number): Promise<ProjectResponseInterface> {
     const project = await this.projectsService.addPmToProject(id, pmId);
     return this.projectsService.buildProjectResponse(project);
@@ -52,6 +60,7 @@ export class ProjectController {
 
   @Patch(':id')
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   async removeProjectManagerFromProject(@Param('id', ParseIntPipe) id: number): Promise<ProjectResponseInterface> {
     const project = await this.projectsService.removePmFromProject(id);
     return this.projectsService.buildProjectResponse(project);

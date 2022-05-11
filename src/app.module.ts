@@ -6,11 +6,11 @@ import { AuthModule } from '@app/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
 import { CityModule } from '@app/city/city.module';
-import * as ormconfig from '@app/ormconfig';
 import { TechnologyModule } from '@app/technology/techology.module';
 import { ProjectModule } from '@app/project/project.module';
 import { ProjectManagerModule } from '@app/projectManager/projectManager.module';
 import { NoteModule } from '@app/note/note.module';
+import ormconfig from '@app/ormconfig';
 
 @Module({
   imports: [
