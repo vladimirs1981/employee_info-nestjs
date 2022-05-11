@@ -7,8 +7,10 @@ import { ProjectsResponseInterface } from '../project/types/projectsResponse.int
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('pm')
+@ApiTags('project_managers')
 export class ProjectManagerController {
   constructor(private readonly projectManagerService: ProjectManagerService) {}
   // 1. get all employees - pagination and filtering

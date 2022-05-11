@@ -6,8 +6,10 @@ import { CreateTechnologyDto } from '@app/technology/dto/createTechnology.dto';
 import { TechnologyResponseInterface } from '@app/technology/types/technologyResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('technologies')
+@ApiTags('technologies')
 export class TechnologyController {
   constructor(private readonly technologyService: TechnologyService) {}
 

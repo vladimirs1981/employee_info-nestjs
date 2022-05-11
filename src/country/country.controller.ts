@@ -6,8 +6,10 @@ import { CountryResponseInterface } from './types/countryResponse.interface';
 import { CountryEntity } from '@app/country/country.entity';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('countries')
+@ApiTags('countries')
 export class CountryController {
   constructor(private readonly countryService: CountryService) {}
 

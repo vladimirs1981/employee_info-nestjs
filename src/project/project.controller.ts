@@ -6,11 +6,14 @@ import { CreateProjectDto } from './dto/createProject.dto';
 import { ProjectResponseInterface } from './types/projectResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('projects')
+@ApiTags('projects')
 export class ProjectController {
   constructor(private readonly projectsService: ProjectService) {}
   @Get()
+  @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async getAll(): Promise<{ projects: ProjectEntity[] }> {
     const projects = await this.projectsService.findAll();
@@ -52,7 +55,7 @@ export class ProjectController {
 
   @Post(':id/project_manager/:pmId')
   @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async addProjectManagerToProject(@Param('id', ParseIntPipe) id: number, @Param('pmId', ParseIntPipe) pmId: number): Promise<ProjectResponseInterface> {
     const project = await this.projectsService.addPmToProject(id, pmId);
     return this.projectsService.buildProjectResponse(project);
@@ -60,7 +63,7 @@ export class ProjectController {
 
   @Patch(':id')
   @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async removeProjectManagerFromProject(@Param('id', ParseIntPipe) id: number): Promise<ProjectResponseInterface> {
     const project = await this.projectsService.removePmFromProject(id);
     return this.projectsService.buildProjectResponse(project);

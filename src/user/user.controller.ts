@@ -11,8 +11,10 @@ import { UserRole } from './types/userRole.enum';
 import { UserSeniority } from './types/userSeniority.enum';
 import { UserSeniorityValidationPipe } from './pipes/userSeniority.validatrion.pipe';
 import { Roles } from './decorators/userRoles.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

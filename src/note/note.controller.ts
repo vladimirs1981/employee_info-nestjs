@@ -7,8 +7,10 @@ import { CreateNoteDto } from './dto/createNote.dto';
 import { NoteResponseInterface } from './types/noteResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('notes')
+@ApiTags('notes')
 export class NoteController {
   constructor(private readonly noteService: NoteService) {}
 

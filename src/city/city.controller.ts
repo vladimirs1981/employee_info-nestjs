@@ -6,8 +6,10 @@ import { CityResponseInterface } from './types/cityResponse.interface';
 import { CityEntity } from './city.entity';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
+import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('cities')
+@ApiTags('cities')
 export class CityController {
   constructor(private readonly cityService: CityService) {}
 
@@ -20,6 +22,20 @@ export class CityController {
   }
 
   @Get(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a city that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A city has been successfuly fetched',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A city with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async findOneById(@Param('id', ParseIntPipe) id: number): Promise<CityResponseInterface> {
@@ -28,6 +44,9 @@ export class CityController {
   }
 
   @Post()
+  @ApiBody({
+    type: CreateCityDto,
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async create(@Body('city') createCityDto: CreateCityDto): Promise<CityResponseInterface> {
@@ -36,6 +55,24 @@ export class CityController {
   }
 
   @Put(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a city that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A city name has been successfuly updated',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A city with given id does not exist',
+  })
+  @ApiBody({
+    description: 'name is required',
+    type: CreateCityDto,
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async updateCity(@Param('id', ParseIntPipe) cityId: number, @Body('city') updateCityDto: CreateCityDto): Promise<CityResponseInterface> {
