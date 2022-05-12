@@ -6,13 +6,15 @@ import { CreateProjectDto } from './dto/createProject.dto';
 import { ProjectResponseInterface } from './types/projectResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DeleteResult } from 'typeorm';
 
 @Controller('projects')
 @ApiTags('projects')
 export class ProjectController {
   constructor(private readonly projectsService: ProjectService) {}
   @Get()
+  @ApiOkResponse({ type: [ProjectEntity], status: 200 })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async getAll(): Promise<{ projects: ProjectEntity[] }> {
@@ -22,6 +24,21 @@ export class ProjectController {
   }
 
   @Get(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a project that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project has been successfuly fetched',
+    type: ProjectEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A project with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async getOneById(@Param('id', ParseIntPipe) id: number): Promise<ProjectResponseInterface> {
@@ -30,6 +47,10 @@ export class ProjectController {
   }
 
   @Post()
+  @ApiBody({
+    type: CreateProjectDto,
+  })
+  @ApiCreatedResponse({ type: ProjectEntity })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async createProject(@Body('project') createProjectDto: CreateProjectDto): Promise<ProjectResponseInterface> {
@@ -39,6 +60,25 @@ export class ProjectController {
   }
 
   @Put(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a project that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project name has been successfuly updated',
+    type: ProjectEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A project with given id does not exist',
+  })
+  @ApiBody({
+    description: 'name is required',
+    type: CreateProjectDto,
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async updateProject(@Body('project') createProjectDto: CreateProjectDto, @Param('id', ParseIntPipe) id: number): Promise<ProjectResponseInterface> {
@@ -47,6 +87,21 @@ export class ProjectController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a project that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project  has been successfuly deleted',
+    type: DeleteResult,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A project with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async deleteProject(@Param('id', ParseIntPipe) id: number) {
@@ -54,6 +109,27 @@ export class ProjectController {
   }
 
   @Post(':id/project_manager/:pmId')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a project that exists in the database',
+    type: Number,
+  })
+  @ApiParam({
+    name: 'pmId',
+    required: true,
+    description: 'Should be an id of a project manager that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project manager has been successfuly added to project',
+    type: ProjectEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A project od project manager with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async addProjectManagerToProject(@Param('id', ParseIntPipe) id: number, @Param('pmId', ParseIntPipe) pmId: number): Promise<ProjectResponseInterface> {
@@ -62,6 +138,21 @@ export class ProjectController {
   }
 
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a project that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project manager  has been successfuly removed from project',
+    type: ProjectEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A project with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async removeProjectManagerFromProject(@Param('id', ParseIntPipe) id: number): Promise<ProjectResponseInterface> {

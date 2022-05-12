@@ -6,7 +6,8 @@ import { CityResponseInterface } from './types/cityResponse.interface';
 import { CityEntity } from './city.entity';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DeleteResult } from 'typeorm';
 
 @Controller('cities')
 @ApiTags('cities')
@@ -14,6 +15,7 @@ export class CityController {
   constructor(private readonly cityService: CityService) {}
 
   @Get()
+  @ApiOkResponse({ type: [CityEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async findAll(): Promise<{ cities: CityEntity[] }> {
@@ -31,6 +33,7 @@ export class CityController {
   @ApiResponse({
     status: 200,
     description: 'A city has been successfuly fetched',
+    type: CityEntity,
   })
   @ApiResponse({
     status: 404,
@@ -47,6 +50,7 @@ export class CityController {
   @ApiBody({
     type: CreateCityDto,
   })
+  @ApiCreatedResponse({ type: CityEntity })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async create(@Body('city') createCityDto: CreateCityDto): Promise<CityResponseInterface> {
@@ -64,6 +68,7 @@ export class CityController {
   @ApiResponse({
     status: 200,
     description: 'A city name has been successfuly updated',
+    type: CityEntity,
   })
   @ApiResponse({
     status: 404,
@@ -81,6 +86,21 @@ export class CityController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a city that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A city  has been successfuly deleted',
+    type: DeleteResult,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A city with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async deleteCity(@Param('id', ParseIntPipe) cityId: number) {

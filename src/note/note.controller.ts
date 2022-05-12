@@ -7,7 +7,8 @@ import { CreateNoteDto } from './dto/createNote.dto';
 import { NoteResponseInterface } from './types/noteResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { NoteEntity } from './note.entity';
 
 @Controller('notes')
 @ApiTags('notes')
@@ -15,6 +16,7 @@ export class NoteController {
   constructor(private readonly noteService: NoteService) {}
 
   @Get()
+  @ApiOkResponse({ type: [NoteEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.PROJECT_MANAGER)
   async findAll(): Promise<NotesResponseInterface> {
@@ -23,6 +25,24 @@ export class NoteController {
   }
 
   @Post(':employeeId')
+  @ApiBody({
+    type: CreateNoteDto,
+  })
+  @ApiParam({
+    name: 'employeeId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'A note for a found user has been successfuly created',
+    type: NoteEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.PROJECT_MANAGER)
   async create(

@@ -11,7 +11,7 @@ import { UserRole } from './types/userRole.enum';
 import { UserSeniority } from './types/userSeniority.enum';
 import { UserSeniorityValidationPipe } from './pipes/userSeniority.validatrion.pipe';
 import { Roles } from './decorators/userRoles.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller()
 @ApiTags('users')
@@ -20,6 +20,7 @@ export class UserController {
 
   // get all users
   @Get('users')
+  @ApiOkResponse({ type: [UserEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.PROJECT_MANAGER, UserRole.ADMIN)
   async getAllUsers(): Promise<{ users: UserEntity[] }> {
@@ -29,6 +30,10 @@ export class UserController {
 
   // create new user
   @Post('users')
+  @ApiBody({
+    type: CreateUserDto,
+  })
+  @ApiCreatedResponse({ type: UserEntity })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   @UsePipes(new ValidationPipe())
@@ -39,6 +44,25 @@ export class UserController {
 
   // edit user
   @Put('users/:id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A user name has been successfuly updated',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A user with given id does not exist',
+  })
+  @ApiBody({
+    description: 'firstName, lastName and email are required',
+    type: UpdateUserDto,
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async updateUser(@Param('id') id: number, @Body('user') updateUserDto: UpdateUserDto): Promise<UserResponseInterface> {
@@ -49,6 +73,24 @@ export class UserController {
 
   // add seniority to user
   @Patch('users/seniority/:userId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A user has been successfuly updated',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A user with given id does not exist',
+  })
+  @ApiBody({
+    description: 'intern, junior, medior or senior',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async updateUserSeniority(
@@ -62,6 +104,27 @@ export class UserController {
 
   // add city to user
   @Post('users/:userId/city/:cityId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiParam({
+    name: 'cityId',
+    required: true,
+    description: 'Should be an id of a city that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A city has been successfuly added to user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A city or user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async addCityToUser(@Param('userId', ParseIntPipe) userId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<UserResponseInterface> {
@@ -72,6 +135,27 @@ export class UserController {
 
   //add project to user
   @Post('users/:userId/project/:projectId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiParam({
+    name: 'projectId',
+    required: true,
+    description: 'Should be an id of a project that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project has been successfuly added to user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A project or user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   async addProjectToUser(@Param('userId', ParseIntPipe) userId: number, @Param('projectId', ParseIntPipe) projectId: number): Promise<UserResponseInterface> {
     const user = await this.userService.addProjectToUser(userId, projectId);
@@ -81,6 +165,27 @@ export class UserController {
 
   // add technology to user
   @Post('/users/:userId/technology/:technologyId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiParam({
+    name: 'technologyId',
+    required: true,
+    description: 'Should be an id of a technology that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A technology has been successfuly added to user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A technology or user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async addTechnologyToUser(@Param('userId', ParseIntPipe) userId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
@@ -91,6 +196,27 @@ export class UserController {
 
   // remove technology from user
   @Delete('/users/:userId/technology/:technologyId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiParam({
+    name: 'technologyId',
+    required: true,
+    description: 'Should be an id of a technology that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A technology has been successfuly removed from user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A technology or user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async removeTechnologyFromUser(@Param('userId', ParseIntPipe) userId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
@@ -103,6 +229,7 @@ export class UserController {
 
   // get all employees
   @Get('users/employees')
+  @ApiOkResponse({ type: [UserEntity], description: 'Fetch all users with role employee' })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async getAllEmployees(): Promise<{ employees: UserEntity[] }> {
@@ -114,6 +241,8 @@ export class UserController {
 
   // get all admins
   @Get('users/admins')
+  @ApiOkResponse({ type: [UserEntity], description: 'Fetch all users with role admin' })
+  @ApiOkResponse({ type: [UserEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async getAllAdmins(): Promise<{ admins: UserEntity[] }> {
@@ -123,6 +252,21 @@ export class UserController {
 
   // create admin
   @Post('users/admins/:userId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A admin has been successfuly created',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A  user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async createAdmin(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
@@ -133,6 +277,21 @@ export class UserController {
 
   // remove from admins
   @Put('users/admins/:userId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A admin has been successfuly deleted',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A  user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async removeUserFromAdmins(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
@@ -145,6 +304,7 @@ export class UserController {
 
   // get all project managers
   @Get('users/pm')
+  @ApiOkResponse({ type: [UserEntity], description: 'Fetch all users with role project_manager' })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async getAllPMs(): Promise<{ project_managers: UserEntity[] }> {
@@ -154,6 +314,21 @@ export class UserController {
 
   //create project manager
   @Post('users/pm/:userId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project_manager has been successfuly created',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A  user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async createPm(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
@@ -164,6 +339,21 @@ export class UserController {
 
   // remove from project managers
   @Put('users/pm/:userId')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project_manager has been successfuly deleted',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A  user with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async removeUserFromPMs(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
@@ -176,6 +366,7 @@ export class UserController {
 
   // get current user
   @Get('user')
+  @ApiOkResponse({ type: UserEntity })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async currentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
@@ -184,6 +375,15 @@ export class UserController {
 
   // edit current user
   @Put('user')
+  @ApiResponse({
+    status: 200,
+    description: 'A user name has been successfuly updated',
+    type: UserEntity,
+  })
+  @ApiBody({
+    description: 'firstName, lastName and email are required',
+    type: UpdateUserDto,
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUser(@User('id') currentUserId: number, @Body('user') updateUserDto: UpdateUserDto): Promise<UserResponseInterface> {
@@ -194,6 +394,15 @@ export class UserController {
 
   // edit current user role
   @Patch('user/role')
+  @ApiResponse({
+    status: 200,
+    description: 'A user role has been successfuly updated',
+    type: UserEntity,
+  })
+  @ApiBody({
+    description: 'admin, project_manager or employee',
+    type: String,
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUserRole(@User('id') currentUserId: number, @Body('role', UserRoleValidationPipe) role: UserRole): Promise<UserResponseInterface> {
@@ -204,6 +413,15 @@ export class UserController {
 
   // edit current user seniority (intern, junior, medior, senior)
   @Patch('user/seniority')
+  @ApiResponse({
+    status: 200,
+    description: 'A user seniority has been successfuly updated',
+    type: UserEntity,
+  })
+  @ApiBody({
+    description: 'intern, junior, medior or senior',
+    type: String,
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUserSeniority(@User('id') currentUserId: number, @Body('seniority', UserSeniorityValidationPipe) seniority: UserSeniority): Promise<UserResponseInterface> {
@@ -214,6 +432,21 @@ export class UserController {
 
   // add city to current user
   @Post('user/city/:cityId')
+  @ApiParam({
+    name: 'cityId',
+    required: true,
+    description: 'Should be an id of a city that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A city has been successfuly added to user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A city with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async addCityToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<UserResponseInterface> {
@@ -224,6 +457,21 @@ export class UserController {
 
   //add project to current user
   @Post('user/project/:projectId')
+  @ApiParam({
+    name: 'projectId',
+    required: true,
+    description: 'Should be an id of a project that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A project has been successfuly added to user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A project with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async addProjectToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('projectId', ParseIntPipe) projectId: number): Promise<UserResponseInterface> {
@@ -234,6 +482,21 @@ export class UserController {
 
   // add technology to current user
   @Post('/user/technology/:technologyId')
+  @ApiParam({
+    name: 'technologyId',
+    required: true,
+    description: 'Should be an id of a technology that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A technology has been successfuly added to user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A technology with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async addTechnologyToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
@@ -244,6 +507,21 @@ export class UserController {
 
   // remove technology from current user
   @Delete('/user/technology/:technologyId')
+  @ApiParam({
+    name: 'technologyId',
+    required: true,
+    description: 'Should be an id of a technology that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A technology has been successfuly removed from user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A technology with given id does not exist',
+  })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async removeTechnologyFromCurrentUser(

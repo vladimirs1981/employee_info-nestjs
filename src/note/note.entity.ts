@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
 
@@ -11,12 +12,15 @@ export class NoteEntity {
   @Column()
   createdBy: string;
 
+  @ApiProperty({ required: true, example: 'This is note text' })
   @Column()
   text: string;
 
+  @ApiProperty()
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
+  @ApiProperty()
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
