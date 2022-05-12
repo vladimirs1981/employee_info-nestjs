@@ -1,15 +1,15 @@
 import { UsersResponseInterface } from '@app/user/types/usersResponse.interface';
 import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@app/user/guards/auth.guard';
-import { ProjectManagerService } from './projectManager.service';
+import { ProjectManagerService } from '@app/projectManager/projectManager.service';
 import { User } from '@app/user/decorators/user.decorator';
-import { ProjectsResponseInterface } from '../project/types/projectsResponse.interface';
+import { ProjectsResponseInterface } from '@app/project/types/projectsResponse.interface';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { ApiBearerAuth, ApiOkResponse, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserEntity } from '@app/user/user.entity';
-import { ProjectEntity } from '../project/project.entity';
+import { ProjectEntity } from '@app/project/project.entity';
 
 @Controller('pm')
 @ApiTags('project_managers')

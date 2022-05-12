@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '@app/user/user.entity';
-import { getRepository, Repository } from 'typeorm';
-import { UsersResponseInterface } from '../user/types/usersResponse.interface';
+import { getRepository } from 'typeorm';
+import { UsersResponseInterface } from '@app/user/types/usersResponse.interface';
 import { ProjectEntity } from '@app/project/project.entity';
-import { ProjectsResponseInterface } from '../project/types/projectsResponse.interface';
+import { ProjectsResponseInterface } from '@app/project/types/projectsResponse.interface';
 
 @Injectable()
 export class ProjectManagerService {

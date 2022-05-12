@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from '../user/user.entity';
+import { UserEntity } from '@app/user/user.entity';
 
 @Entity({
   name: 'notes',

@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post, UseGuards, ParseIntPipe, Put, Delete, Patch } from '@nestjs/common';
-import { ProjectService } from './project.service';
-import { ProjectEntity } from './project.entity';
-import { AuthGuard } from '../user/guards/auth.guard';
+import { ProjectService } from '@app/project/project.service';
+import { ProjectEntity } from '@app/project/project.entity';
+import { AuthGuard } from '@app/user/guards/auth.guard';
 import { CreateProjectDto } from './dto/createProject.dto';
-import { ProjectResponseInterface } from './types/projectResponse.interface';
+import { ProjectResponseInterface } from '@app/project/types/projectResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';

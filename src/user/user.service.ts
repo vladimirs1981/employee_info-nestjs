@@ -1,16 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
-import { UserEntity } from './user.entity';
+import { UserEntity } from '@app/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { UserSeniority } from './types/userSeniority.enum';
-import { CityEntity } from '../city/city.entity';
-import { TechnologyEntity } from '../technology/technology.entity';
-import { ProjectEntity } from '../project/project.entity';
+import { UserSeniority } from '@app/user/types/userSeniority.enum';
+import { CityEntity } from '@app/city/city.entity';
+import { TechnologyEntity } from '@app/technology/technology.entity';
+import { ProjectEntity } from '@app/project/project.entity';
 
 @Injectable()
 export class UserService {

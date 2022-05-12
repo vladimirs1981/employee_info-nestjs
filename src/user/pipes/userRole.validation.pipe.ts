@@ -1,5 +1,5 @@
 import { BadGatewayException, PipeTransform } from '@nestjs/common';
-import { UserRole } from '../types/userRole.enum';
+import { UserRole } from '@app/user/types/userRole.enum';
 
 export class UserRoleValidationPipe implements PipeTransform {
   readonly allowedRoles = [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.PROJECT_MANAGER];

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from '@app/user/user.module';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { GoogleStrategy } from './strategies/google.strategy';
+import { AuthController } from '@app/auth/auth.controller';
+import { AuthService } from '@app/auth/auth.service';
+import { GoogleStrategy } from '@app/auth/strategies/google.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '@app/user/user.entity';
 

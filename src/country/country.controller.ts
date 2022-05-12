@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, ParseIntPipe } from '@nestjs/common';
-import { CountryService } from './country.service';
-import { AuthGuard } from '../user/guards/auth.guard';
-import { CreateCountryDto } from './dto/createCountry.dto';
-import { CountryResponseInterface } from './types/countryResponse.interface';
+import { CountryService } from '@app/country/country.service';
+import { AuthGuard } from '@app/user/guards/auth.guard';
+import { CreateCountryDto } from '@app/country/dto/createCountry.dto';
+import { CountryResponseInterface } from '@app/country/types/countryResponse.interface';
 import { CountryEntity } from '@app/country/country.entity';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';

@@ -1,5 +1,5 @@
 import { BadGatewayException, PipeTransform } from '@nestjs/common';
-import { UserSeniority } from '../types/userSeniority.enum';
+import { UserSeniority } from '@app/user/types/userSeniority.enum';
 
 export class UserSeniorityValidationPipe implements PipeTransform {
   readonly allowedSeniorities = [UserSeniority.INTERN, UserSeniority.JUNIOR, UserSeniority.MEDIOR, UserSeniority.SENIOR];

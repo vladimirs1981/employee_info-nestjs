@@ -1,16 +1,16 @@
 import { Body, Controller, Get, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe, ParseIntPipe, Param, Delete } from '@nestjs/common';
 import { UserService } from '@app/user/user.service';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
-import { UserResponseInterface } from './types/userResponse.interface';
+import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { User } from '@app/user/decorators/user.decorator';
 import { UserEntity } from '@app/user/user.entity';
-import { AuthGuard } from './guards/auth.guard';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { UserRoleValidationPipe } from './pipes/userRole.validation.pipe';
-import { UserRole } from './types/userRole.enum';
-import { UserSeniority } from './types/userSeniority.enum';
-import { UserSeniorityValidationPipe } from './pipes/userSeniority.validatrion.pipe';
-import { Roles } from './decorators/userRoles.decorator';
+import { AuthGuard } from '@app/user/guards/auth.guard';
+import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
+import { UserRoleValidationPipe } from '@app/user/pipes/userRole.validation.pipe';
+import { UserRole } from '@app/user/types/userRole.enum';
+import { UserSeniority } from '@app/user/types/userSeniority.enum';
+import { UserSeniorityValidationPipe } from '@app/user/pipes/userSeniority.validatrion.pipe';
+import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller()

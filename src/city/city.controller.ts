@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { CityService } from '@app/city/city.service';
 import { AuthGuard } from '@app/user/guards/auth.guard';
-import { CreateCityDto } from './dto/createCity.dto';
-import { CityResponseInterface } from './types/cityResponse.interface';
-import { CityEntity } from './city.entity';
+import { CreateCityDto } from '@app/city/dto/createCity.dto';
+import { CityResponseInterface } from '@app/city/types/cityResponse.interface';
+import { CityEntity } from '@app/city/city.entity';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';

@@ -1,9 +1,9 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { ProjectEntity } from './project.entity';
+import { ProjectEntity } from '@app/project/project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
-import { CreateProjectDto } from './dto/createProject.dto';
-import { UserEntity } from '../user/user.entity';
+import { CreateProjectDto } from '@app/project/dto/createProject.dto';
+import { UserEntity } from '@app/user/user.entity';
 import { UserRole } from '@app/user/types/userRole.enum';
 
 @Injectable()

@@ -3,8 +3,8 @@ import { CreateCityDto } from '@app/city/dto/createCity.dto';
 import { CityEntity } from '@app/city/city.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
-import { CityResponseInterface } from './types/cityResponse.interface';
-import { CountryEntity } from '../country/country.entity';
+import { CityResponseInterface } from '@app/city/types/cityResponse.interface';
+import { CountryEntity } from '@app/country/country.entity';
 
 @Injectable()
 export class CityService {

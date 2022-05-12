@@ -4,11 +4,11 @@ import { UserService } from '@app/user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '@app/user/user.entity';
 import { AuthGuard } from '@app/user/guards/auth.guard';
-import { CityEntity } from '../city/city.entity';
-import { TechnologyEntity } from '../technology/technology.entity';
-import { ProjectEntity } from '../project/project.entity';
+import { CityEntity } from '@app/city/city.entity';
+import { TechnologyEntity } from '@app/technology/technology.entity';
+import { ProjectEntity } from '@app/project/project.entity';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './guards/roles.guard';
+import { RolesGuard } from '@app/user/guards/roles.guard';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, CityEntity, TechnologyEntity, ProjectEntity])],

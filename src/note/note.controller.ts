@@ -1,14 +1,14 @@
 import { Controller, Get, Post, UseGuards, ParseIntPipe, Body, Param } from '@nestjs/common';
 import { NoteService } from '@app/note/note.service';
-import { NotesResponseInterface } from './types/notesResponse.interface';
+import { NotesResponseInterface } from '@app/note/types/notesResponse.interface';
 import { AuthGuard } from '@app/user/guards/auth.guard';
 import { User } from '@app/user/decorators/user.decorator';
-import { CreateNoteDto } from './dto/createNote.dto';
-import { NoteResponseInterface } from './types/noteResponse.interface';
+import { CreateNoteDto } from '@app/note/dto/createNote.dto';
+import { NoteResponseInterface } from '@app/note/types/noteResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { NoteEntity } from './note.entity';
+import { NoteEntity } from '@app/note/note.entity';
 
 @Controller('notes')
 @ApiTags('notes')

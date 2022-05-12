@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@app/user/user.entity';
 import { Repository } from 'typeorm';
@@ -35,7 +35,9 @@ export class AuthService {
 
     user = await this.userRepository.findOne({ where: { email: data.user.email } });
     if (user) {
-      throw new ForbiddenException('User already exists, but Google account was not connected to user account');
+      user.googleId = data.user.googleId;
+      await this.userRepository.save(user);
+      return this.login(user);
     }
 
     try {

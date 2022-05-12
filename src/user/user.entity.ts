@@ -1,11 +1,10 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { CityEntity } from '@app/city/city.entity';
-import { UserSeniority } from './types/userSeniority.enum';
-import { CountryEntity } from '../country/country.entity';
-import { TechnologyEntity } from '../technology/technology.entity';
-import { ProjectEntity } from '../project/project.entity';
-import { NoteEntity } from '../note/note.entity';
+import { UserSeniority } from '@app/user/types/userSeniority.enum';
+import { TechnologyEntity } from '@app/technology/technology.entity';
+import { ProjectEntity } from '@app/project/project.entity';
+import { NoteEntity } from '@app/note/note.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'users' })

@@ -1,4 +1,4 @@
-import { NoteEntity } from '../note.entity';
+import { NoteEntity } from '@app/note/note.entity';
 export interface NoteResponseInterface {
   note: NoteEntity;
 }
