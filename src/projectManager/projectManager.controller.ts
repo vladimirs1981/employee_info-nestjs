@@ -7,7 +7,7 @@ import { ProjectsResponseInterface } from '../project/types/projectsResponse.int
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
-import { ApiOkResponse, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserEntity } from '@app/user/user.entity';
 import { ProjectEntity } from '../project/project.entity';
 
@@ -17,8 +17,9 @@ export class ProjectManagerController {
   constructor(private readonly projectManagerService: ProjectManagerService) {}
   // 1. get all employees - pagination and filtering
   @Get('employees')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiQuery({
-    description: 'you can query by city, country, project and project manager by providing a valid id, seniority by name, and you can search user firstName and lastName',
+    description: 'you can query by city, country, project, technology and seniority by name, project manager by id and you can search user firstName and lastName',
     example: 'http://localhost:3005/pm/employees?city=1',
   })
   @ApiOkResponse({ type: [UserEntity] })
@@ -29,8 +30,9 @@ export class ProjectManagerController {
   }
   // 2. get all employees for PM - pagination and filtering
   @Get('pm-employees')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiQuery({
-    description: 'you can query by city, country, project by providing a valid id, seniority by name, and you can search user firstName and lastName',
+    description: 'you can query by city, country, project, seniority by name, and you can search user firstName and lastName',
     example: 'http://localhost:3005/pm/employees?seniority=junior',
   })
   @ApiOkResponse({ type: [UserEntity] })
@@ -41,6 +43,7 @@ export class ProjectManagerController {
   }
   // 3. get all projects
   @Get('projects')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiQuery({
     description: 'you can search by project name',
     example: 'http://localhost:3005/pm/employees?search=Running App',
@@ -54,6 +57,7 @@ export class ProjectManagerController {
 
   // 4. get all projects for current user
   @Get('pm-projects')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiQuery({
     description: 'you can search by project name',
     example: 'http://localhost:3005/pm/employees?search=Running App',
@@ -66,6 +70,7 @@ export class ProjectManagerController {
   }
   // 5. get single employee
   @Get('employees/:id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,

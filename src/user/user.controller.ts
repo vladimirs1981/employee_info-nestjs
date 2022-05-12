@@ -11,15 +11,17 @@ import { UserRole } from './types/userRole.enum';
 import { UserSeniority } from './types/userSeniority.enum';
 import { UserSeniorityValidationPipe } from './pipes/userSeniority.validatrion.pipe';
 import { Roles } from './decorators/userRoles.decorator';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiBearerAuth('defaultBearerAuth')
 @ApiTags('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // get all users
   @Get('users')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [UserEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.PROJECT_MANAGER, UserRole.ADMIN)
@@ -30,6 +32,7 @@ export class UserController {
 
   // create new user
   @Post('users')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiBody({
     type: CreateUserDto,
   })
@@ -44,6 +47,7 @@ export class UserController {
 
   // edit user
   @Put('users/:id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -73,6 +77,7 @@ export class UserController {
 
   // add seniority to user
   @Patch('users/seniority/:userId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -104,6 +109,7 @@ export class UserController {
 
   // add city to user
   @Post('users/:userId/city/:cityId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -135,6 +141,7 @@ export class UserController {
 
   //add project to user
   @Post('users/:userId/project/:projectId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -165,6 +172,7 @@ export class UserController {
 
   // add technology to user
   @Post('/users/:userId/technology/:technologyId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -196,6 +204,7 @@ export class UserController {
 
   // remove technology from user
   @Delete('/users/:userId/technology/:technologyId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -229,6 +238,7 @@ export class UserController {
 
   // get all employees
   @Get('users/employees')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [UserEntity], description: 'Fetch all users with role employee' })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
@@ -241,6 +251,7 @@ export class UserController {
 
   // get all admins
   @Get('users/admins')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [UserEntity], description: 'Fetch all users with role admin' })
   @ApiOkResponse({ type: [UserEntity] })
   @UseGuards(AuthGuard)
@@ -252,6 +263,7 @@ export class UserController {
 
   // create admin
   @Post('users/admins/:userId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -277,6 +289,7 @@ export class UserController {
 
   // remove from admins
   @Put('users/admins/:userId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -304,6 +317,7 @@ export class UserController {
 
   // get all project managers
   @Get('users/pm')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [UserEntity], description: 'Fetch all users with role project_manager' })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
@@ -314,6 +328,7 @@ export class UserController {
 
   //create project manager
   @Post('users/pm/:userId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -339,6 +354,7 @@ export class UserController {
 
   // remove from project managers
   @Put('users/pm/:userId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'userId',
     required: true,
@@ -366,6 +382,7 @@ export class UserController {
 
   // get current user
   @Get('user')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: UserEntity })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
@@ -375,6 +392,7 @@ export class UserController {
 
   // edit current user
   @Put('user')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiResponse({
     status: 200,
     description: 'A user name has been successfuly updated',
@@ -394,6 +412,7 @@ export class UserController {
 
   // edit current user role
   @Patch('user/role')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiResponse({
     status: 200,
     description: 'A user role has been successfuly updated',
@@ -413,6 +432,7 @@ export class UserController {
 
   // edit current user seniority (intern, junior, medior, senior)
   @Patch('user/seniority')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiResponse({
     status: 200,
     description: 'A user seniority has been successfuly updated',
@@ -432,6 +452,7 @@ export class UserController {
 
   // add city to current user
   @Post('user/city/:cityId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'cityId',
     required: true,
@@ -457,6 +478,7 @@ export class UserController {
 
   //add project to current user
   @Post('user/project/:projectId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'projectId',
     required: true,
@@ -482,6 +504,7 @@ export class UserController {
 
   // add technology to current user
   @Post('/user/technology/:technologyId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'technologyId',
     required: true,
@@ -507,6 +530,7 @@ export class UserController {
 
   // remove technology from current user
   @Delete('/user/technology/:technologyId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'technologyId',
     required: true,

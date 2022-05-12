@@ -6,10 +6,11 @@ import { CreateProjectDto } from './dto/createProject.dto';
 import { ProjectResponseInterface } from './types/projectResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult } from 'typeorm';
 
 @Controller('projects')
+@ApiBearerAuth('defaultBearerAuth')
 @ApiTags('projects')
 export class ProjectController {
   constructor(private readonly projectsService: ProjectService) {}
@@ -24,6 +25,7 @@ export class ProjectController {
   }
 
   @Get(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -47,6 +49,7 @@ export class ProjectController {
   }
 
   @Post()
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiBody({
     type: CreateProjectDto,
   })
@@ -60,6 +63,7 @@ export class ProjectController {
   }
 
   @Put(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -87,6 +91,7 @@ export class ProjectController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -109,6 +114,7 @@ export class ProjectController {
   }
 
   @Post(':id/project_manager/:pmId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -138,6 +144,7 @@ export class ProjectController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,

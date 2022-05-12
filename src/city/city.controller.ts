@@ -6,7 +6,7 @@ import { CityResponseInterface } from './types/cityResponse.interface';
 import { CityEntity } from './city.entity';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult } from 'typeorm';
 
 @Controller('cities')
@@ -15,6 +15,7 @@ export class CityController {
   constructor(private readonly cityService: CityService) {}
 
   @Get()
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [CityEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
@@ -24,6 +25,7 @@ export class CityController {
   }
 
   @Get(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -47,6 +49,7 @@ export class CityController {
   }
 
   @Post()
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiBody({
     type: CreateCityDto,
   })
@@ -59,6 +62,7 @@ export class CityController {
   }
 
   @Put(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -86,6 +90,7 @@ export class CityController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,

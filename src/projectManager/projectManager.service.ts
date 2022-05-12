@@ -1,19 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@app/user/user.entity';
-import { getRepository, QueryBuilder, Repository } from 'typeorm';
-import { TechnologyEntity } from '../technology/technology.entity';
+import { getRepository, Repository } from 'typeorm';
 import { UsersResponseInterface } from '../user/types/usersResponse.interface';
 import { ProjectEntity } from '@app/project/project.entity';
 import { ProjectsResponseInterface } from '../project/types/projectsResponse.interface';
 
 @Injectable()
 export class ProjectManagerService {
-  constructor(
-    @InjectRepository(TechnologyEntity) private readonly technologyRepository: Repository<TechnologyEntity>,
-    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
-  ) {}
-
   async findAll(query: any): Promise<UsersResponseInterface> {
     const queryBuilder = getRepository(UserEntity)
       .createQueryBuilder('users')
@@ -28,14 +21,20 @@ export class ProjectManagerService {
     }
 
     if (query.city) {
-      queryBuilder.andWhere('users.cityId = :id', {
-        id: query.city,
+      queryBuilder.andWhere('city.name = :name', {
+        name: query.city,
+      });
+    }
+
+    if (query.technology) {
+      queryBuilder.andWhere('technologies.name = :name', {
+        name: query.technology,
       });
     }
 
     if (query.country) {
-      queryBuilder.andWhere('city.countryId = :id', {
-        id: query.country,
+      queryBuilder.andWhere('country.name = :name', {
+        name: query.country,
       });
     }
 
@@ -46,8 +45,8 @@ export class ProjectManagerService {
     }
 
     if (query.project) {
-      queryBuilder.andWhere('users.projectId = :id', {
-        id: query.project,
+      queryBuilder.andWhere('project.name = :name', {
+        name: query.project,
       });
     }
 
@@ -90,14 +89,20 @@ export class ProjectManagerService {
     }
 
     if (query.city) {
-      queryBuilder.andWhere('users.cityId = :id', {
-        id: query.city,
+      queryBuilder.andWhere('city.name = :name', {
+        name: query.city,
+      });
+    }
+
+    if (query.technology) {
+      queryBuilder.andWhere('technologies.name = :name', {
+        name: query.technology,
       });
     }
 
     if (query.country) {
-      queryBuilder.andWhere('city.countryId = :id', {
-        id: query.country,
+      queryBuilder.andWhere('country.name = :name', {
+        name: query.country,
       });
     }
 
@@ -108,8 +113,8 @@ export class ProjectManagerService {
     }
 
     if (query.project) {
-      queryBuilder.andWhere('users.projectId = :id', {
-        id: query.project,
+      queryBuilder.andWhere('project.name = :name', {
+        name: query.project,
       });
     }
 

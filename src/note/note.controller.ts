@@ -7,7 +7,7 @@ import { CreateNoteDto } from './dto/createNote.dto';
 import { NoteResponseInterface } from './types/noteResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { ApiBody, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NoteEntity } from './note.entity';
 
 @Controller('notes')
@@ -16,6 +16,7 @@ export class NoteController {
   constructor(private readonly noteService: NoteService) {}
 
   @Get()
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [NoteEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.PROJECT_MANAGER)
@@ -25,6 +26,7 @@ export class NoteController {
   }
 
   @Post(':employeeId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiBody({
     type: CreateNoteDto,
   })

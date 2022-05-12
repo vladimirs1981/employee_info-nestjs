@@ -6,15 +6,17 @@ import { CountryResponseInterface } from './types/countryResponse.interface';
 import { CountryEntity } from '@app/country/country.entity';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult } from 'typeorm';
 
 @Controller('countries')
+@ApiBearerAuth('defaultBearerAuth')
 @ApiTags('countries')
 export class CountryController {
   constructor(private readonly countryService: CountryService) {}
 
   @Get()
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [CountryEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
@@ -26,6 +28,7 @@ export class CountryController {
   }
 
   @Get(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -49,6 +52,7 @@ export class CountryController {
   }
 
   @Post()
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiBody({
     type: CreateCountryDto,
   })
@@ -61,6 +65,7 @@ export class CountryController {
   }
 
   @Put(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -88,6 +93,7 @@ export class CountryController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -110,6 +116,7 @@ export class CountryController {
   }
 
   @Post(':countryId/city/:cityId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'countryId',
     required: true,
@@ -140,6 +147,7 @@ export class CountryController {
   }
 
   @Delete(':countryId/city/:cityId')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'countryId',
     required: true,

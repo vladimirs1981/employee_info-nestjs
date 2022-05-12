@@ -6,7 +6,7 @@ import { CreateTechnologyDto } from '@app/technology/dto/createTechnology.dto';
 import { TechnologyResponseInterface } from '@app/technology/types/technologyResponse.interface';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { UserRole } from '@app/user/types/userRole.enum';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult } from 'typeorm';
 
 @Controller('technologies')
@@ -15,6 +15,7 @@ export class TechnologyController {
   constructor(private readonly technologyService: TechnologyService) {}
 
   @Get()
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [TechnologyEntity] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
@@ -23,6 +24,7 @@ export class TechnologyController {
   }
 
   @Get(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -47,6 +49,7 @@ export class TechnologyController {
   }
 
   @Post()
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiBody({
     type: CreateTechnologyDto,
   })
@@ -64,6 +67,7 @@ export class TechnologyController {
   }
 
   @Put(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
@@ -92,6 +96,7 @@ export class TechnologyController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
     required: true,
