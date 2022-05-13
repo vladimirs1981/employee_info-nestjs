@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { CityResponseInterface } from '@app/city/types/cityResponse.interface';
 import { CountryEntity } from '@app/country/country.entity';
+import { PostgresErrorCode } from '@app/database/postgresErrorCodes.enum';
 
 @Injectable()
 export class CityService {
@@ -14,40 +15,66 @@ export class CityService {
   ) {}
 
   async findAllCities(): Promise<CityEntity[]> {
-    return await this.cityRepository.find({
-      relations: ['country'],
-    });
+    try {
+      return await this.cityRepository.find({
+        relations: ['country'],
+      });
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findCityById(id: number): Promise<CityEntity> {
-    const city = await this.cityRepository.findOne(id);
-    if (!city) {
-      throw new HttpException('City not found', HttpStatus.NOT_FOUND);
+    try {
+      const city = await this.cityRepository.findOne(id);
+      if (!city) {
+        throw new HttpException('City not found', HttpStatus.NOT_FOUND);
+      }
+      return city;
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return city;
   }
 
   async createCity(createCityDto: CreateCityDto): Promise<CityEntity> {
-    const city = new CityEntity();
-    Object.assign(city, createCityDto);
+    try {
+      const city = new CityEntity();
+      Object.assign(city, createCityDto);
 
-    return await this.cityRepository.save(city);
+      return await this.cityRepository.save(city);
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new HttpException('City with that name already exists', HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async updateCity(cityId: number, createCityDto: CreateCityDto): Promise<CityEntity> {
-    const city = await this.findCityById(cityId);
+    try {
+      const city = await this.findCityById(cityId);
 
-    if (!city) {
-      throw new HttpException('City not found', HttpStatus.NOT_FOUND);
+      if (!city) {
+        throw new HttpException('City not found', HttpStatus.NOT_FOUND);
+      }
+
+      Object.assign(city, createCityDto);
+      return await this.cityRepository.save(city);
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new HttpException('City with that name already exists', HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    Object.assign(city, createCityDto);
-    return await this.cityRepository.save(city);
   }
 
   async deleteCity(cityId: number): Promise<DeleteResult> {
-    const city = await this.findCityById(cityId);
-    return this.cityRepository.delete(city);
+    try {
+      const city = await this.findCityById(cityId);
+      return this.cityRepository.delete(city);
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   buildCityResponse(city: CityEntity): CityResponseInterface {

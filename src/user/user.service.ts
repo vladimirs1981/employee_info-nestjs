@@ -11,6 +11,7 @@ import { UserSeniority } from '@app/user/types/userSeniority.enum';
 import { CityEntity } from '@app/city/city.entity';
 import { TechnologyEntity } from '@app/technology/technology.entity';
 import { ProjectEntity } from '@app/project/project.entity';
+import { PostgresErrorCode } from '@app/database/postgresErrorCodes.enum';
 
 @Injectable()
 export class UserService {
@@ -22,210 +23,271 @@ export class UserService {
   ) {}
 
   async findAllUsers(): Promise<UserEntity[]> {
-    return this.userRepository.find();
+    try {
+      return this.userRepository.find();
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findAllEmployees(): Promise<UserEntity[]> {
-    return this.userRepository.find({
-      where: {
-        role: UserRole.EMPLOYEE,
-      },
-    });
+    try {
+      return this.userRepository.find({
+        where: {
+          role: UserRole.EMPLOYEE,
+        },
+      });
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findAllAdmins(): Promise<UserEntity[]> {
-    return this.userRepository.find({
-      where: {
-        role: UserRole.ADMIN,
-      },
-    });
+    try {
+      return this.userRepository.find({
+        where: {
+          role: UserRole.ADMIN,
+        },
+      });
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findAllPMs(): Promise<UserEntity[]> {
-    return this.userRepository.find({
-      where: {
-        role: UserRole.PROJECT_MANAGER,
-      },
-    });
+    try {
+      return this.userRepository.find({
+        where: {
+          role: UserRole.PROJECT_MANAGER,
+        },
+      });
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async createAdmin(userId: number): Promise<UserEntity> {
-    const user = await this.findById(userId);
+    try {
+      const user = await this.findById(userId);
 
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      if (user.role === UserRole.ADMIN) {
+        throw new HttpException('User is already an admin', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+
+      user.role = UserRole.ADMIN;
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    if (user.role === UserRole.ADMIN) {
-      throw new HttpException('User is already an admin', HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    user.role = UserRole.ADMIN;
-    return this.userRepository.save(user);
   }
 
   async removeFromAdmins(userId: number): Promise<UserEntity> {
-    const user = await this.findById(userId);
+    try {
+      const user = await this.findById(userId);
 
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      user.role = UserRole.EMPLOYEE;
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    user.role = UserRole.EMPLOYEE;
-    return this.userRepository.save(user);
   }
 
   async removeFromPMs(userId: number): Promise<UserEntity> {
-    const user = await this.findById(userId);
+    try {
+      const user = await this.findById(userId);
 
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      user.role = UserRole.EMPLOYEE;
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    user.role = UserRole.EMPLOYEE;
-    return this.userRepository.save(user);
   }
 
   async createPm(userId: number): Promise<UserEntity> {
-    const user = await this.findById(userId);
+    try {
+      const user = await this.findById(userId);
 
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      if (user.role === UserRole.PROJECT_MANAGER) {
+        throw new HttpException('User is already a project manager', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+
+      user.role = UserRole.PROJECT_MANAGER;
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    if (user.role === UserRole.PROJECT_MANAGER) {
-      throw new HttpException('User is already a project manager', HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    user.role = UserRole.PROJECT_MANAGER;
-    return this.userRepository.save(user);
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const userByEmail = await this.userRepository.findOne({
-      email: createUserDto.email,
-    });
-    if (userByEmail) {
-      throw new HttpException('Email is taken', HttpStatus.UNPROCESSABLE_ENTITY);
+    try {
+      const userByEmail = await this.userRepository.findOne({
+        email: createUserDto.email,
+      });
+      if (userByEmail) {
+        throw new HttpException('Email is taken', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+      const newUser = new UserEntity();
+      Object.assign(newUser, createUserDto);
+      return await this.userRepository.save(newUser);
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    const newUser = new UserEntity();
-    Object.assign(newUser, createUserDto);
-    return await this.userRepository.save(newUser);
   }
 
   async findById(id: number): Promise<UserEntity> {
-    return this.userRepository.findOne(id);
+    try {
+      const user = this.userRepository.findOne(id);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      return user;
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async updateUser(userId: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-    const user = await this.findById(userId);
-    Object.assign(user, updateUserDto);
-    return await this.userRepository.save(user);
+    try {
+      const user = await this.findById(userId);
+      Object.assign(user, updateUserDto);
+      return await this.userRepository.save(user);
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async updateUserRole(currentUserId: number, role: UserRole): Promise<UserEntity> {
-    const user = await this.findById(currentUserId);
-    user.role = role;
-    await this.userRepository.save(user);
-    return user;
+    try {
+      const user = await this.findById(currentUserId);
+      user.role = role;
+      await this.userRepository.save(user);
+      return user;
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async updateUserSeniority(currentUserId: number, seniority: UserSeniority): Promise<UserEntity> {
-    const user = await this.findById(currentUserId);
-    user.seniority = seniority;
-    await this.userRepository.save(user);
-    return user;
+    try {
+      const user = await this.findById(currentUserId);
+      user.seniority = seniority;
+      await this.userRepository.save(user);
+      return user;
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async addCityToUser(currentUserId: number, cityId: number): Promise<UserEntity> {
-    const user = await this.userRepository.findOne(currentUserId);
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-    const city = await this.cityRepository.findOne(cityId);
-    if (!city) {
-      throw new HttpException('City not found', HttpStatus.NOT_FOUND);
-    }
-    user.city = city;
+    try {
+      const user = await this.userRepository.findOne(currentUserId);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      const city = await this.cityRepository.findOne(cityId);
+      if (!city) {
+        throw new HttpException('City not found', HttpStatus.NOT_FOUND);
+      }
+      user.city = city;
 
-    return this.userRepository.save(user);
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async addProjectToUser(currentUserId: number, projectId: number): Promise<UserEntity> {
-    const user = await this.userRepository.findOne(currentUserId);
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-    const project = await this.projectRepository.findOne(projectId);
-    if (!project) {
-      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
-    }
-    user.project = project;
+    try {
+      const user = await this.userRepository.findOne(currentUserId);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      const project = await this.projectRepository.findOne(projectId);
+      if (!project) {
+        throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+      }
+      user.project = project;
 
-    return this.userRepository.save(user);
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async addTechnologyToUser(currentUserId: number, technologyId: number): Promise<UserEntity> {
-    const user = await this.userRepository.findOne(currentUserId, {
-      relations: ['technologies'],
-    });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    try {
+      const user = await this.userRepository.findOne(currentUserId, {
+        relations: ['technologies'],
+      });
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      const technology = await this.technologyRepository.findOne(technologyId);
+      if (!technology) {
+        throw new HttpException('Technology not found', HttpStatus.NOT_FOUND);
+      }
+
+      const isNotInTechnologies = user.technologies.findIndex(techInUser => techInUser.id === technology.id) === -1;
+
+      if (isNotInTechnologies) {
+        user.technologies.push(technology);
+        await this.userRepository.save(user);
+        await this.technologyRepository.save(technology);
+      }
+
+      return user;
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    const technology = await this.technologyRepository.findOne(technologyId);
-    if (!technology) {
-      throw new HttpException('Technology not found', HttpStatus.NOT_FOUND);
-    }
-
-    const isNotInTechnologies = user.technologies.findIndex(techInUser => techInUser.id === technology.id) === -1;
-
-    if (isNotInTechnologies) {
-      user.technologies.push(technology);
-      await this.userRepository.save(user);
-      await this.technologyRepository.save(technology);
-    }
-
-    return user;
   }
 
   async removeTechnologyFromUser(currentUserId: number, technologyId: number): Promise<UserEntity> {
-    const user = await this.userRepository.findOne(currentUserId, {
-      relations: ['technologies'],
-    });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    try {
+      const user = await this.userRepository.findOne(currentUserId, {
+        relations: ['technologies'],
+      });
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      const technology = await this.technologyRepository.findOne(technologyId);
+      if (!technology) {
+        throw new HttpException('Technology not found', HttpStatus.NOT_FOUND);
+      }
+
+      const technologyIndex = user.technologies.findIndex(techInUser => techInUser.id === technology.id);
+      if (technologyIndex >= 0) {
+        user.technologies.splice(technologyIndex, 1);
+        await this.userRepository.save(user);
+        await this.technologyRepository.save(technology);
+      }
+      return user;
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    const technology = await this.technologyRepository.findOne(technologyId);
-    if (!technology) {
-      throw new HttpException('Technology not found', HttpStatus.NOT_FOUND);
-    }
-
-    const technologyIndex = user.technologies.findIndex(techInUser => techInUser.id === technology.id);
-    if (technologyIndex >= 0) {
-      user.technologies.splice(technologyIndex, 1);
-      await this.userRepository.save(user);
-      await this.technologyRepository.save(technology);
-    }
-    return user;
-  }
-
-  async login(user: UserEntity) {
-    return {
-      access_token: this.generateJwt(user),
-    };
-  }
-
-  generateJwt(user: UserEntity): string {
-    return sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-      process.env.JWT_SECRET,
-    );
   }
 
   buildUserResponse(user: UserEntity): UserResponseInterface {
