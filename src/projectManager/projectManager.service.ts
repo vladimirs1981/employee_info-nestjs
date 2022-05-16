@@ -188,6 +188,9 @@ export class ProjectManagerService {
     try {
       const queryBuilder = getRepository(UserEntity)
         .createQueryBuilder('users')
+        .leftJoinAndSelect('users.city', 'city')
+        .leftJoinAndSelect('city.country', 'country')
+        .leftJoinAndSelect('users.technologies', 'technologies')
         .leftJoinAndSelect('users.project', 'project')
         .leftJoinAndSelect('users.notes', 'notes')
         .orderBy({
