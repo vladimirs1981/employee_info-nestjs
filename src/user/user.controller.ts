@@ -320,7 +320,7 @@ export class UserController {
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [UserEntity], description: 'Fetch all users with role project_manager' })
   @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async getAllPMs(): Promise<{ project_managers: UserEntity[] }> {
     const project_managers = await this.userService.findAllPMs();
     return { project_managers };
