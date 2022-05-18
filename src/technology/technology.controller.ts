@@ -18,7 +18,7 @@ export class TechnologyController {
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [TechnologyEntity] })
   @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async findAll(): Promise<{ technologies: TechnologyEntity[] }> {
     return this.technologyService.findAllTechnologies();
   }

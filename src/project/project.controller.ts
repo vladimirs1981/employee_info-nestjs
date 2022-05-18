@@ -17,7 +17,7 @@ export class ProjectController {
   @Get()
   @ApiOkResponse({ type: [ProjectEntity], status: 200 })
   @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async getAll(): Promise<{ projects: ProjectEntity[] }> {
     const projects = await this.projectsService.findAll();
 

@@ -19,7 +19,7 @@ export class CountryController {
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [CountryEntity] })
   @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async findAll(): Promise<{ countries: CountryEntity[] }> {
     const countries = await this.countryService.findAll();
     return {

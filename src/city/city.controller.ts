@@ -18,7 +18,7 @@ export class CityController {
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOkResponse({ type: [CityEntity] })
   @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async findAll(): Promise<{ cities: CityEntity[] }> {
     const cities = await this.cityService.findAllCities();
     return { cities };
