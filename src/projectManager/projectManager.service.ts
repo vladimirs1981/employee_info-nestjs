@@ -110,9 +110,9 @@ export class ProjectManagerService {
       }
 
       if (query.city) {
-        const city = await this.cityRepository.findOne({ name: query.city });
-        queryBuilder.andWhere('users.cityId = :id', {
-          id: city.id,
+        // const city = await this.cityRepository.findOne({ name: query.city });
+        queryBuilder.andWhere('city.name = :name', {
+          name: query.city,
         });
       }
 
@@ -124,9 +124,9 @@ export class ProjectManagerService {
       }
 
       if (query.country) {
-        const country = await this.countryRepository.findOne({ name: query.country });
-        queryBuilder.andWhere('city.countryId = :id', {
-          id: country.id,
+        // const country = await this.countryRepository.findOne({ name: query.country });
+        queryBuilder.andWhere('country.name = :name', {
+          name: query.country,
         });
       }
 
