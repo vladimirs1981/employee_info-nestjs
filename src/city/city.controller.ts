@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards, Logger } from '@nestjs/common';
 import { CityService } from '@app/city/city.service';
 import { AuthGuard } from '@app/user/guards/auth.guard';
 import { CreateCityDto } from '@app/city/dto/createCity.dto';
@@ -12,6 +12,7 @@ import { DeleteResult } from 'typeorm';
 @Controller('cities')
 @ApiTags('cities')
 export class CityController {
+  private logger = new Logger('CityController');
   constructor(private readonly cityService: CityService) {}
 
   @Get()
@@ -20,6 +21,7 @@ export class CityController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async findAll(): Promise<{ cities: CityEntity[] }> {
+    this.logger.verbose('Retrieving all cities');
     const cities = await this.cityService.findAllCities();
     return { cities };
   }
@@ -44,6 +46,7 @@ export class CityController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async findOneById(@Param('id', ParseIntPipe) id: number): Promise<CityResponseInterface> {
+    this.logger.verbose(`Retrieving city with the id:${JSON.stringify(id)}`);
     const city = await this.cityService.findCityById(id);
     return this.cityService.buildCityResponse(city);
   }
@@ -57,6 +60,7 @@ export class CityController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async create(@Body('city') createCityDto: CreateCityDto): Promise<CityResponseInterface> {
+    this.logger.verbose(`Creating a new city. Data: ${JSON.stringify(createCityDto)}`);
     const city = await this.cityService.createCity(createCityDto);
     return this.cityService.buildCityResponse(city);
   }
@@ -85,6 +89,7 @@ export class CityController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async updateCity(@Param('id', ParseIntPipe) cityId: number, @Body('city') updateCityDto: CreateCityDto): Promise<CityResponseInterface> {
+    this.logger.verbose(`Updating a city. Data: ${JSON.stringify(updateCityDto)}`);
     const city = await this.cityService.updateCity(cityId, updateCityDto);
     return this.cityService.buildCityResponse(city);
   }
@@ -109,6 +114,7 @@ export class CityController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async deleteCity(@Param('id', ParseIntPipe) cityId: number) {
+    this.logger.verbose(`Deleting city with the id:${cityId}`);
     return this.cityService.deleteCity(cityId);
   }
 }

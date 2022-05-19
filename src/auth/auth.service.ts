@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@app/user/user.entity';
 import { Repository } from 'typeorm';
@@ -6,9 +6,11 @@ import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger('AuthService');
   constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>) {}
 
   async login(user: UserEntity) {
+    this.logger.debug(`Generated JWT token for user id: ${JSON.stringify(user.id)}`);
     return {
       access_token: sign(
         {

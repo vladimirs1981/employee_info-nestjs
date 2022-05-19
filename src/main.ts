@@ -3,10 +3,12 @@ if (!process.env.IS_TS_NODE) {
 }
 
 import { NestFactory } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from '@app/app.module';
 import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
+  const logger = new Logger('bootstrap');
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   const configSwagger = new DocumentBuilder()
@@ -41,5 +43,6 @@ async function bootstrap() {
     credentials: true,
   });
   await app.listen(process.env.PORT || 3005);
+  logger.log(`Application listening on port 3005`);
 }
 bootstrap();

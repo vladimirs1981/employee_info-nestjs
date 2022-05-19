@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, ParseIntPipe, Logger } from '@nestjs/common';
 import { CountryService } from '@app/country/country.service';
 import { AuthGuard } from '@app/user/guards/auth.guard';
 import { CreateCountryDto } from '@app/country/dto/createCountry.dto';
@@ -13,6 +13,7 @@ import { DeleteResult } from 'typeorm';
 @ApiBearerAuth('defaultBearerAuth')
 @ApiTags('countries')
 export class CountryController {
+  private logger = new Logger('CountryController');
   constructor(private readonly countryService: CountryService) {}
 
   @Get()
@@ -21,6 +22,7 @@ export class CountryController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async findAll(): Promise<{ countries: CountryEntity[] }> {
+    this.logger.verbose('Retrieving all countries');
     const countries = await this.countryService.findAll();
     return {
       countries,
@@ -47,6 +49,7 @@ export class CountryController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async findOneById(@Param('id') countryId: number): Promise<CountryResponseInterface> {
+    this.logger.verbose(`Retrieving country with the id:${JSON.stringify(countryId)}`);
     const country = await this.countryService.findCountryById(countryId);
     return this.countryService.buildCountryResponse(country);
   }
@@ -60,6 +63,7 @@ export class CountryController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async create(@Body('country') createCountryDto: CreateCountryDto): Promise<CountryResponseInterface> {
+    this.logger.verbose(`Creating a new country. Data: ${JSON.stringify(createCountryDto)}`);
     const country = await this.countryService.createCountry(createCountryDto);
     return this.countryService.buildCountryResponse(country);
   }
@@ -88,6 +92,7 @@ export class CountryController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async updateCountry(@Param('id') countryId: number, @Body('country') updateCountryDto: CreateCountryDto): Promise<CountryResponseInterface> {
+    this.logger.verbose(`Updating a country. Data: ${JSON.stringify(updateCountryDto)}`);
     const country = await this.countryService.updateCountry(countryId, updateCountryDto);
     return this.countryService.buildCountryResponse(country);
   }
@@ -112,6 +117,7 @@ export class CountryController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async deleteCountry(@Param('id') countryId: number) {
+    this.logger.verbose(`Deleting country with the id:${JSON.stringify(countryId)}`);
     return this.countryService.deleteCountry(countryId);
   }
 
@@ -141,6 +147,7 @@ export class CountryController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async addCityToCountry(@Param('countryId', ParseIntPipe) countryId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<CountryResponseInterface> {
+    this.logger.verbose(`Adding city with id ${cityId} to country with id ${countryId}`);
     const country = await this.countryService.addCityToCountry(countryId, cityId);
 
     return this.countryService.buildCountryResponse(country);
@@ -172,6 +179,7 @@ export class CountryController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async deleteCityFromCountry(@Param('countryId', ParseIntPipe) countryId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<CountryResponseInterface> {
+    this.logger.verbose(`Removing city with id ${cityId} from country with id ${countryId}`);
     const country = await this.countryService.deleteCityFromCountry(countryId, cityId);
 
     return this.countryService.buildCountryResponse(country);

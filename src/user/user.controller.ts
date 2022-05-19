@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe, ParseIntPipe, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe, ParseIntPipe, Param, Delete, Logger } from '@nestjs/common';
 import { UserService } from '@app/user/user.service';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
@@ -12,11 +12,13 @@ import { UserSeniority } from '@app/user/types/userSeniority.enum';
 import { UserSeniorityValidationPipe } from '@app/user/pipes/userSeniority.validatrion.pipe';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { threadId } from 'worker_threads';
 
 @Controller()
 @ApiBearerAuth('defaultBearerAuth')
 @ApiTags('users')
 export class UserController {
+  private logger = new Logger('UserController');
   constructor(private readonly userService: UserService) {}
 
   // get all users
@@ -26,6 +28,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.PROJECT_MANAGER, UserRole.ADMIN)
   async getAllUsers(): Promise<{ users: UserEntity[] }> {
+    this.logger.verbose('Retrieving all users');
     const users = await this.userService.findAllUsers();
     return { users };
   }
@@ -41,6 +44,7 @@ export class UserController {
   @Roles(UserRole.ADMIN)
   @UsePipes(new ValidationPipe())
   async createUser(@Body('user') createUserDto: CreateUserDto): Promise<UserResponseInterface> {
+    this.logger.verbose(`Creating a new user. Data:${JSON.stringify(createUserDto)}`);
     const user = await this.userService.createUser(createUserDto);
     return this.userService.buildUserResponse(user);
   }
@@ -70,6 +74,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async updateUser(@Param('id') id: number, @Body('user') updateUserDto: UpdateUserDto): Promise<UserResponseInterface> {
+    this.logger.verbose(`Updating user with id:${id}. Data:${JSON.stringify(updateUserDto)}`);
     const user = await this.userService.updateUser(id, updateUserDto);
 
     return this.userService.buildUserResponse(user);
@@ -102,6 +107,7 @@ export class UserController {
     @Param('userId', ParseIntPipe) userId: number,
     @Body('seniority', UserSeniorityValidationPipe) seniority: UserSeniority,
   ): Promise<UserResponseInterface> {
+    this.logger.verbose(`Adding seniority ${seniority} to user with id:${userId}`);
     const user = await this.userService.updateUserSeniority(userId, seniority);
 
     return this.userService.buildUserResponse(user);
@@ -134,6 +140,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async addCityToUser(@Param('userId', ParseIntPipe) userId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Adding city (id:${cityId}) to user (id:${userId})`);
     const user = await this.userService.addCityToUser(userId, cityId);
 
     return this.userService.buildUserResponse(user);
@@ -165,6 +172,7 @@ export class UserController {
   })
   @UseGuards(AuthGuard)
   async addProjectToUser(@Param('userId', ParseIntPipe) userId: number, @Param('projectId', ParseIntPipe) projectId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Adding project (id:${projectId}) to user (id:${userId})`);
     const user = await this.userService.addProjectToUser(userId, projectId);
 
     return this.userService.buildUserResponse(user);
@@ -197,6 +205,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async addTechnologyToUser(@Param('userId', ParseIntPipe) userId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Adding technology (id:${technologyId}) to user (id:${userId})`);
     const user = await this.userService.addTechnologyToUser(userId, technologyId);
 
     return this.userService.buildUserResponse(user);
@@ -229,6 +238,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async removeTechnologyFromUser(@Param('userId', ParseIntPipe) userId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Removing technlogy (id:${technologyId}) from user (id:${userId})`);
     const user = await this.userService.removeTechnologyFromUser(userId, technologyId);
 
     return this.userService.buildUserResponse(user);
@@ -243,6 +253,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async getAllEmployees(): Promise<{ employees: UserEntity[] }> {
+    this.logger.verbose('Retrieving all employees.');
     const employees = await this.userService.findAllEmployees();
     return { employees };
   }
@@ -257,6 +268,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async getAllAdmins(): Promise<{ admins: UserEntity[] }> {
+    this.logger.verbose('Retrieving all admins.');
     const admins = await this.userService.findAllAdmins();
     return { admins };
   }
@@ -282,6 +294,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async createAdmin(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Creating admin of user with id:${userId}`);
     const user = await this.userService.createAdmin(userId);
 
     return this.userService.buildUserResponse(user);
@@ -308,6 +321,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async removeUserFromAdmins(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Removing user with id:${userId} from admins`);
     const user = await this.userService.removeFromAdmins(userId);
 
     return this.userService.buildUserResponse(user);
@@ -322,6 +336,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async getAllPMs(): Promise<{ project_managers: UserEntity[] }> {
+    this.logger.verbose('Retrieving all project_managers.');
     const project_managers = await this.userService.findAllPMs();
     return { project_managers };
   }
@@ -347,6 +362,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async createPm(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Creating project_manager from user with id:${userId}`);
     const user = await this.userService.createPm(userId);
 
     return this.userService.buildUserResponse(user);
@@ -373,6 +389,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   async removeUserFromPMs(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Removing user with id:${userId} from project_managers`);
     const user = await this.userService.removeFromPMs(userId);
 
     return this.userService.buildUserResponse(user);
@@ -387,6 +404,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async currentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
+    this.logger.verbose(`Retrieving current logged in user:${user.firstName} ${user.lastName}`);
     return this.userService.buildUserResponse(user);
   }
 
@@ -405,6 +423,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUser(@User('id') currentUserId: number, @Body('user') updateUserDto: UpdateUserDto): Promise<UserResponseInterface> {
+    this.logger.verbose(`Editing current user (id:${currentUserId}). Data:${JSON.stringify(updateUserDto)}`);
     const user = await this.userService.updateUser(currentUserId, updateUserDto);
 
     return this.userService.buildUserResponse(user);
@@ -425,6 +444,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUserRole(@User('id') currentUserId: number, @Body('role', UserRoleValidationPipe) role: UserRole): Promise<UserResponseInterface> {
+    this.logger.verbose(`Updating current user role. New role: ${role}`);
     const user = await this.userService.updateUserRole(currentUserId, role);
 
     return this.userService.buildUserResponse(user);
@@ -445,6 +465,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async updateCurrentUserSeniority(@User('id') currentUserId: number, @Body('seniority', UserSeniorityValidationPipe) seniority: UserSeniority): Promise<UserResponseInterface> {
+    this.logger.verbose(`Updating current user seniority. New seniority: ${seniority}`);
     const user = await this.userService.updateUserSeniority(currentUserId, seniority);
 
     return this.userService.buildUserResponse(user);
@@ -471,6 +492,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async addCityToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('cityId', ParseIntPipe) cityId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Add city with id:${cityId} to current user.`);
     const user = await this.userService.addCityToUser(currentUserId, cityId);
 
     return this.userService.buildUserResponse(user);
@@ -497,6 +519,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async addProjectToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('projectId', ParseIntPipe) projectId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Add project with id:${projectId} to current user.`);
     const user = await this.userService.addProjectToUser(currentUserId, projectId);
 
     return this.userService.buildUserResponse(user);
@@ -523,6 +546,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.EMPLOYEE)
   async addTechnologyToCurrentUser(@User('id', ParseIntPipe) currentUserId: number, @Param('technologyId', ParseIntPipe) technologyId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Add technology with id:${technologyId} to current user.`);
     const user = await this.userService.addTechnologyToUser(currentUserId, technologyId);
 
     return this.userService.buildUserResponse(user);
@@ -552,6 +576,7 @@ export class UserController {
     @User('id', ParseIntPipe) currentUserId: number,
     @Param('technologyId', ParseIntPipe) technologyId: number,
   ): Promise<UserResponseInterface> {
+    this.logger.verbose(`Remove technology with id:${technologyId} from current user.`);
     const user = await this.userService.removeTechnologyFromUser(currentUserId, technologyId);
 
     return this.userService.buildUserResponse(user);

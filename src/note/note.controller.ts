@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards, ParseIntPipe, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, ParseIntPipe, Body, Param, Logger } from '@nestjs/common';
 import { NoteService } from '@app/note/note.service';
 import { NotesResponseInterface } from '@app/note/types/notesResponse.interface';
 import { AuthGuard } from '@app/user/guards/auth.guard';
@@ -13,6 +13,7 @@ import { NoteEntity } from '@app/note/note.entity';
 @Controller('notes')
 @ApiTags('notes')
 export class NoteController {
+  private logger = new Logger('NoteController');
   constructor(private readonly noteService: NoteService) {}
 
   @Get()
@@ -21,6 +22,7 @@ export class NoteController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.PROJECT_MANAGER)
   async findAll(): Promise<NotesResponseInterface> {
+    this.logger.verbose('Retrieving all notes');
     const notes = await this.noteService.findAll();
     return { notes };
   }
@@ -52,6 +54,7 @@ export class NoteController {
     @Body('note') createNoteDto: CreateNoteDto,
     @Param('employeeId', ParseIntPipe) employeeId: number,
   ): Promise<NoteResponseInterface> {
+    this.logger.verbose(`Creatin a new note for employee with id:${employeeId}. Data: ${JSON.stringify(createNoteDto)}`);
     const note = await this.noteService.createNote(currentUserId, createNoteDto, employeeId);
     return this.noteService.buildNoteResponse(note);
   }

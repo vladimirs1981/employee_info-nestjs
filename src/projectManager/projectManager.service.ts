@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CityEntity } from '@app/city/city.entity';
 import { CountryEntity } from '../country/country.entity';
 import { TechnologyEntity } from '@app/technology/technology.entity';
+import { EmployeeFilterDto } from './dto/employee.filter.dto';
 
 @Injectable()
 export class ProjectManagerService {
@@ -18,7 +19,7 @@ export class ProjectManagerService {
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(TechnologyEntity) private readonly technologyRepository: Repository<TechnologyEntity>,
   ) {}
-  async findAll(query: any): Promise<UsersResponseInterface> {
+  async findAll(query: EmployeeFilterDto): Promise<UsersResponseInterface> {
     try {
       const queryBuilder = getRepository(UserEntity)
         .createQueryBuilder('users')
@@ -92,7 +93,7 @@ export class ProjectManagerService {
     }
   }
 
-  async findAllForCurrentUser(currentUserId: number, query: any): Promise<UsersResponseInterface> {
+  async findAllForCurrentUser(currentUserId: number, query: EmployeeFilterDto): Promise<UsersResponseInterface> {
     try {
       const queryBuilder = getRepository(UserEntity)
         .createQueryBuilder('users')
@@ -162,7 +163,7 @@ export class ProjectManagerService {
     }
   }
 
-  async findAllProjects(query: any): Promise<ProjectsResponseInterface> {
+  async findAllProjects(query: string): Promise<ProjectsResponseInterface> {
     try {
       const queryBuilder = getRepository(ProjectEntity)
         .createQueryBuilder('projects')
@@ -181,7 +182,7 @@ export class ProjectManagerService {
     }
   }
 
-  async findAllProjectsForCurrentUser(currentUserId: number, query: any): Promise<ProjectsResponseInterface> {
+  async findAllProjectsForCurrentUser(currentUserId: number, query: string): Promise<ProjectsResponseInterface> {
     try {
       const queryBuilder = getRepository(ProjectEntity)
         .createQueryBuilder('projects')
