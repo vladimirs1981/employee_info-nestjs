@@ -1,12 +1,23 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserEntity } from '@app/user/user.entity';
-import { getRepository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { UsersResponseInterface } from '@app/user/types/usersResponse.interface';
 import { ProjectEntity } from '@app/project/project.entity';
 import { ProjectsResponseInterface } from '@app/project/types/projectsResponse.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CityEntity } from '@app/city/city.entity';
+import { CountryEntity } from '../country/country.entity';
+import { TechnologyEntity } from '@app/technology/technology.entity';
 
 @Injectable()
 export class ProjectManagerService {
+  constructor(
+    @InjectRepository(CityEntity) private readonly cityRepository: Repository<CityEntity>,
+    @InjectRepository(CountryEntity) private readonly countryRepository: Repository<CountryEntity>,
+    @InjectRepository(ProjectEntity) private readonly projectRepository: Repository<ProjectEntity>,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(TechnologyEntity) private readonly technologyRepository: Repository<TechnologyEntity>,
+  ) {}
   async findAll(query: any): Promise<UsersResponseInterface> {
     try {
       const queryBuilder = getRepository(UserEntity)
@@ -22,20 +33,23 @@ export class ProjectManagerService {
       }
 
       if (query.city) {
-        queryBuilder.andWhere('city.name = :name', {
-          name: query.city,
+        const city = await this.cityRepository.findOne({ name: query.city });
+        queryBuilder.andWhere('users.cityId = :id', {
+          id: city.id,
         });
       }
 
       if (query.technology) {
+        const technology = await this.technologyRepository.findOne({ name: query.technology });
         queryBuilder.andWhere('technologies.name = :name', {
-          name: query.technology,
+          name: technology.name,
         });
       }
 
       if (query.country) {
-        queryBuilder.andWhere('country.name = :name', {
-          name: query.country,
+        const country = await this.countryRepository.findOne({ name: query.country });
+        queryBuilder.andWhere('city.countryId = :id', {
+          id: country.id,
         });
       }
 
@@ -46,14 +60,16 @@ export class ProjectManagerService {
       }
 
       if (query.project) {
-        queryBuilder.andWhere('project.name = :name', {
-          name: query.project,
+        const project = await this.projectRepository.findOne({ name: query.project });
+        queryBuilder.andWhere('users.projectId = :id', {
+          id: project.id,
         });
       }
 
       if (query.projectManager) {
+        const projectManager = await this.userRepository.findOne({ id: query.projectManager });
         queryBuilder.andWhere('project.projectManagerId = :id', {
-          id: query.projectManager,
+          id: projectManager.id,
         });
       }
 
@@ -94,20 +110,23 @@ export class ProjectManagerService {
       }
 
       if (query.city) {
-        queryBuilder.andWhere('city.name = :name', {
-          name: query.city,
+        const city = await this.cityRepository.findOne({ name: query.city });
+        queryBuilder.andWhere('users.cityId = :id', {
+          id: city.id,
         });
       }
 
       if (query.technology) {
+        const technology = await this.technologyRepository.findOne({ name: query.technology });
         queryBuilder.andWhere('technologies.name = :name', {
-          name: query.technology,
+          name: technology.name,
         });
       }
 
       if (query.country) {
-        queryBuilder.andWhere('country.name = :name', {
-          name: query.country,
+        const country = await this.countryRepository.findOne({ name: query.country });
+        queryBuilder.andWhere('city.countryId = :id', {
+          id: country.id,
         });
       }
 
@@ -118,8 +137,9 @@ export class ProjectManagerService {
       }
 
       if (query.project) {
-        queryBuilder.andWhere('project.name = :name', {
-          name: query.project,
+        const project = await this.projectRepository.findOne({ name: query.project });
+        queryBuilder.andWhere('users.projectId = :id', {
+          id: project.id,
         });
       }
 

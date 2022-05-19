@@ -4,9 +4,12 @@ import { ProjectManagerController } from '@app/projectManager/projectManager.con
 import { ProjectManagerService } from '@app/projectManager/projectManager.service';
 import { TechnologyEntity } from '@app/technology/technology.entity';
 import { UserEntity } from '@app/user/user.entity';
+import { CityEntity } from '../city/city.entity';
+import { CountryEntity } from '../country/country.entity';
+import { ProjectEntity } from '../project/project.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TechnologyEntity, UserEntity])],
+  imports: [TypeOrmModule.forFeature([TechnologyEntity, UserEntity, CityEntity, CountryEntity, ProjectEntity])],
   controllers: [ProjectManagerController],
   providers: [ProjectManagerService],
 })
