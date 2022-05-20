@@ -434,7 +434,7 @@ export class UserController {
     description: 'A  user with given id does not exist',
   })
   @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async removeUserFromPMs(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
     this.logger.verbose(`Removing user with id:${userId} from project_managers`);
     const user = await this.userService.removeFromPMs(userId);

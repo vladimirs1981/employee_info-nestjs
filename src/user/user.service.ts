@@ -77,6 +77,19 @@ export class UserService {
       if (user.role === UserRole.ADMIN) {
         throw new HttpException('User is already an admin', HttpStatus.UNPROCESSABLE_ENTITY);
       }
+      if (user.role === UserRole.PROJECT_MANAGER) {
+        const project = await this.projectRepository.findOne({
+          relations: ['projectManager'],
+          where: {
+            projectManager: user,
+          },
+        });
+
+        if (project) {
+          project.projectManager = null;
+          await this.projectRepository.save(project);
+        }
+      }
 
       user.role = UserRole.ADMIN;
       return this.userRepository.save(user);
@@ -103,13 +116,24 @@ export class UserService {
   async removeFromPMs(userId: number): Promise<UserEntity> {
     try {
       const user = await this.findById(userId);
-
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
+      const project = await this.projectRepository.findOne({
+        relations: ['projectManager'],
+        where: {
+          projectManager: user,
+        },
+      });
+
+      if (project) {
+        project.projectManager = null;
+        await this.projectRepository.save(project);
+      }
+
       user.role = UserRole.EMPLOYEE;
-      return this.userRepository.save(user);
+      return await this.userRepository.save(user);
     } catch (error) {
       throw error;
     }
