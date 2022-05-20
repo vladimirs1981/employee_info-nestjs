@@ -34,7 +34,7 @@ export class UserController {
     return { users };
   }
 
-  @Get('users/:id')
+  @Get('users/single-user/:id')
   @ApiBearerAuth('defaultBearerAuth')
   @ApiParam({
     name: 'id',
