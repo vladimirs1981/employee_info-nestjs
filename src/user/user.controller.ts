@@ -13,6 +13,7 @@ import { UserSeniorityValidationPipe } from '@app/user/pipes/userSeniority.valid
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { threadId } from 'worker_threads';
+import { UsersResponseInterface } from '../../dist/user/types/usersResponse.interface';
 
 @Controller()
 @ApiBearerAuth('defaultBearerAuth')
@@ -200,8 +201,28 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async removeUserFromProject(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
+    this.logger.verbose(`Removing user with id ${userId} from project`);
     const user = await this.userService.removeUserFromProject(userId);
     return this.userService.buildUserResponse(user);
+  }
+
+  @Get('users/no-project')
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiResponse({
+    status: 200,
+    description: 'A users are successfuly retrieved',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
+  async getAllUsersWithoutProject(): Promise<{ users: UserEntity[] }> {
+    this.logger.verbose(`Retrieving all users without project`);
+    const users = await this.userService.findAllUsersWithoutProject();
+    return { users };
   }
 
   // add technology to user

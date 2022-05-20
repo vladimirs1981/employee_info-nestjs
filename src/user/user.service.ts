@@ -249,6 +249,21 @@ export class UserService {
     }
   }
 
+  async findAllUsersWithoutProject(): Promise<UserEntity[]> {
+    try {
+      const users = await this.userRepository.find({
+        relations: ['project'],
+        where: {
+          project: null,
+        },
+      });
+
+      return users;
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async addTechnologyToUser(currentUserId: number, technologyId: number): Promise<UserEntity> {
     try {
       const user = await this.userRepository.findOne(currentUserId, {
