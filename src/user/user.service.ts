@@ -24,7 +24,9 @@ export class UserService {
 
   async findAllUsers(): Promise<UserEntity[]> {
     try {
-      return this.userRepository.find();
+      return this.userRepository.find({
+        relations: ['city', 'city.country', 'project', 'project.projectManager', 'technologies'],
+      });
     } catch (error) {
       throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
