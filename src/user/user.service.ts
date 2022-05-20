@@ -236,6 +236,19 @@ export class UserService {
     }
   }
 
+  async removeUserFromProject(userId: number): Promise<UserEntity> {
+    try {
+      const user = await this.userRepository.findOne(userId);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      user.project = null;
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async addTechnologyToUser(currentUserId: number, technologyId: number): Promise<UserEntity> {
     try {
       const user = await this.userRepository.findOne(currentUserId, {

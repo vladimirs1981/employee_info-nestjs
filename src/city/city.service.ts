@@ -4,15 +4,11 @@ import { CityEntity } from '@app/city/city.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { CityResponseInterface } from '@app/city/types/cityResponse.interface';
-import { CountryEntity } from '@app/country/country.entity';
 import { PostgresErrorCode } from '@app/database/postgresErrorCodes.enum';
 
 @Injectable()
 export class CityService {
-  constructor(
-    @InjectRepository(CityEntity) private readonly cityRepository: Repository<CityEntity>,
-    @InjectRepository(CountryEntity) private readonly countryRepository: Repository<CountryEntity>,
-  ) {}
+  constructor(@InjectRepository(CityEntity) private readonly cityRepository: Repository<CityEntity>) {}
 
   async findAllCities(): Promise<CityEntity[]> {
     try {

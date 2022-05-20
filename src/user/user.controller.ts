@@ -171,10 +171,36 @@ export class UserController {
     description: 'A project or user with given id does not exist',
   })
   @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   async addProjectToUser(@Param('userId', ParseIntPipe) userId: number, @Param('projectId', ParseIntPipe) projectId: number): Promise<UserResponseInterface> {
     this.logger.verbose(`Adding project (id:${projectId}) to user (id:${userId})`);
     const user = await this.userService.addProjectToUser(userId, projectId);
 
+    return this.userService.buildUserResponse(user);
+  }
+
+  // Remove user from project
+  @Post('users/project/:userId')
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A user has been successfuly removed from project',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A user with given id does not exist',
+  })
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROJECT_MANAGER)
+  async removeUserFromProject(@Param('userId', ParseIntPipe) userId: number): Promise<UserResponseInterface> {
+    const user = await this.userService.removeUserFromProject(userId);
     return this.userService.buildUserResponse(user);
   }
 
