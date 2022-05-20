@@ -1,9 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { UserEntity } from '@app/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { sign } from 'jsonwebtoken';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
 import { UserRole } from '@app/user/types/userRole.enum';
@@ -15,6 +14,7 @@ import { PostgresErrorCode } from '@app/database/postgresErrorCodes.enum';
 
 @Injectable()
 export class UserService {
+  private logger = new Logger('UserService');
   constructor(
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(CityEntity) private readonly cityRepository: Repository<CityEntity>,
@@ -81,7 +81,7 @@ export class UserService {
       user.role = UserRole.ADMIN;
       return this.userRepository.save(user);
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -96,7 +96,7 @@ export class UserService {
       user.role = UserRole.EMPLOYEE;
       return this.userRepository.save(user);
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -111,7 +111,7 @@ export class UserService {
       user.role = UserRole.EMPLOYEE;
       return this.userRepository.save(user);
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -130,7 +130,7 @@ export class UserService {
       user.role = UserRole.PROJECT_MANAGER;
       return this.userRepository.save(user);
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -161,7 +161,7 @@ export class UserService {
       }
       return user;
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -214,7 +214,7 @@ export class UserService {
 
       return this.userRepository.save(user);
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -224,7 +224,11 @@ export class UserService {
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
+      if (user.role === UserRole.PROJECT_MANAGER || user.role === UserRole.ADMIN) {
+        throw new HttpException('User must be employee in order to work on a project (not an admin or project manager)', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
       const project = await this.projectRepository.findOne(projectId);
+
       if (!project) {
         throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
       }
@@ -232,7 +236,8 @@ export class UserService {
 
       return this.userRepository.save(user);
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(`Something went wrong while adding user to project`, error.stack);
+      throw error;
     }
   }
 
@@ -245,7 +250,7 @@ export class UserService {
       user.project = null;
       return this.userRepository.save(user);
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -260,7 +265,7 @@ export class UserService {
 
       return users;
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -288,7 +293,7 @@ export class UserService {
 
       return user;
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -314,7 +319,7 @@ export class UserService {
       }
       return user;
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
