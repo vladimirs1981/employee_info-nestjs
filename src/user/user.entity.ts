@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '@app/user/types/userRole.enum';
 import { CityEntity } from '@app/city/city.entity';
 import { UserSeniority } from '@app/user/types/userSeniority.enum';
@@ -72,4 +72,7 @@ export class UserEntity {
   @ApiProperty()
   @OneToMany(() => NoteEntity, note => note.employee)
   notes: NoteEntity[];
+
+  @OneToOne(() => ProjectEntity, project => project.projectManager)
+  pm_project: ProjectEntity;
 }

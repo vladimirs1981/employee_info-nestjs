@@ -46,7 +46,7 @@ export class UserService {
 
   async findAllAdmins(): Promise<UserEntity[]> {
     try {
-      return this.userRepository.find({
+      return await this.userRepository.find({
         where: {
           role: UserRole.ADMIN,
         },
@@ -58,7 +58,8 @@ export class UserService {
 
   async findAllPMs(): Promise<UserEntity[]> {
     try {
-      return this.userRepository.find({
+      return await this.userRepository.find({
+        relations: ['pm_project'],
         where: {
           role: UserRole.PROJECT_MANAGER,
         },
@@ -81,9 +82,9 @@ export class UserService {
       }
       if (user.role === UserRole.PROJECT_MANAGER) {
         const project = await this.projectRepository.findOne({
-          relations: ['projectManager'],
+          // relations: ['projectManager'],
           where: {
-            projectManager: user,
+            projectManagerId: user.id,
           },
         });
 
@@ -185,7 +186,7 @@ export class UserService {
         where: {
           id,
         },
-        relations: ['city', 'city.country', 'project', 'project.projectManager', 'technologies'],
+        relations: ['city', 'city.country', 'project', 'project.projectManager', 'technologies', 'pm_project'],
       });
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);

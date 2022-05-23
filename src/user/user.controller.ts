@@ -12,8 +12,6 @@ import { UserSeniority } from '@app/user/types/userSeniority.enum';
 import { UserSeniorityValidationPipe } from '@app/user/pipes/userSeniority.validatrion.pipe';
 import { Roles } from '@app/user/decorators/userRoles.decorator';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { threadId } from 'worker_threads';
-import { UsersResponseInterface } from '../../dist/user/types/usersResponse.interface';
 
 @Controller()
 @ApiBearerAuth('defaultBearerAuth')

@@ -31,7 +31,7 @@ export class ProjectEntity {
   @OneToMany(() => UserEntity, user => user.project)
   employees: UserEntity[];
 
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => UserEntity, user => user.pm_project, { eager: true })
   @JoinColumn()
   projectManager: UserEntity;
 }
