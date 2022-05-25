@@ -38,6 +38,7 @@ export class UserService {
   async findAllEmployees(): Promise<UserEntity[]> {
     try {
       return this.userRepository.find({
+        relations: ['city', 'city.country', 'project', 'project.projectManager', 'technologies'],
         where: {
           role: UserRole.EMPLOYEE,
         },
