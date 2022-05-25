@@ -105,6 +105,28 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
+  @Delete('users/:id')
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'Should be an id of a user that exists in the database',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A user name has been successfuly deleted',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'A user with given id does not exist',
+  })
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+    this.logger.verbose(`Deleting user with id:${id}. `);
+    return await this.userService.deleteUser(id);
+  }
+
   // add seniority to user
   @Patch('users/seniority/:userId')
   @ApiBearerAuth('defaultBearerAuth')

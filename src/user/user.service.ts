@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } 
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { UserEntity } from '@app/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
 import { UserRole } from '@app/user/types/userRole.enum';
@@ -210,6 +210,14 @@ export class UserService {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
       }
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteUser(id: number): Promise<DeleteResult> {
+    try {
+      return await this.userRepository.delete({ id });
+    } catch (error) {
       throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
