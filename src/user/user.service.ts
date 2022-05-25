@@ -358,7 +358,31 @@ export class UserService {
     }
   }
 
-  async loginWithGoogle(token: string, response: Response) {
+  async sendResponse(user: UserEntity, response: Response): Promise<{ token: string }> {
+    const accessToken = sign(
+      {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      },
+
+      process.env.JWT_SECRET,
+    );
+
+    console.log(accessToken);
+
+    response.status(200);
+    response.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, //1 week
+    });
+
+    return {
+      token: accessToken,
+    };
+  }
+
+  async loginWithGoogle(token: string, response: Response): Promise<{ token: string }> {
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
     const ticket = await client.verifyIdToken({
@@ -374,35 +398,31 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    let user = await this.userRepository.findOne({ email: googleUser.email });
+    let user = await this.userRepository.findOne({ googleId: googleUser.sub });
 
-    if (!user) {
-      user = await this.userRepository.save({
-        firstName: googleUser.given_name,
-        lastName: googleUser.family_name,
-        email: googleUser.email,
-      });
+    if (user) {
+      return this.sendResponse(user, response);
     }
 
-    const accessToken = sign(
-      {
-        sub: user.id,
-        email: user.email,
-        role: user.role,
-      },
+    user = await this.userRepository.findOne({ email: googleUser.email });
+    if (user) {
+      user.googleId = googleUser.sub;
+      await this.userRepository.save(user);
+      return this.sendResponse(user, response);
+    }
 
-      process.env.JWT_SECRET,
-    );
+    try {
+      const newUser = new UserEntity();
+      newUser.firstName = googleUser.given_name;
+      newUser.lastName = googleUser.family_name;
+      newUser.email = googleUser.email;
+      newUser.googleId = googleUser.sub;
 
-    response.status(200);
-    response.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, //1 week
-    });
-
-    return {
-      token: accessToken,
-    };
+      await this.userRepository.save(newUser);
+      return this.sendResponse(newUser, response);
+    } catch (error) {
+      throw error;
+    }
   }
 
   buildUserResponse(user: UserEntity): UserResponseInterface {
