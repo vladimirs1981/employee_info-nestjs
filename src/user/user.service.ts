@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { UserEntity } from '@app/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,6 +11,9 @@ import { CityEntity } from '@app/city/city.entity';
 import { TechnologyEntity } from '@app/technology/technology.entity';
 import { ProjectEntity } from '@app/project/project.entity';
 import { PostgresErrorCode } from '@app/database/postgresErrorCodes.enum';
+import { Response } from 'express';
+import { OAuth2Client } from 'google-auth-library';
+import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class UserService {
@@ -353,6 +356,53 @@ export class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async loginWithGoogle(token: string, response: Response) {
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const googleUser = ticket.getPayload();
+
+    console.log(googleUser);
+
+    if (!googleUser) {
+      throw new UnauthorizedException();
+    }
+
+    let user = await this.userRepository.findOne({ email: googleUser.email });
+
+    if (!user) {
+      user = await this.userRepository.save({
+        firstName: googleUser.given_name,
+        lastName: googleUser.family_name,
+        email: googleUser.email,
+      });
+    }
+
+    const accessToken = sign(
+      {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      },
+
+      process.env.JWT_SECRET,
+    );
+
+    response.status(200);
+    response.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, //1 week
+    });
+
+    return {
+      token: accessToken,
+    };
   }
 
   buildUserResponse(user: UserEntity): UserResponseInterface {

@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe, ParseIntPipe, Param, Delete, Logger } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Put, UseGuards, UsePipes, ValidationPipe, ParseIntPipe, Param, Delete, Logger, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { UserService } from '@app/user/user.service';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
@@ -650,5 +651,10 @@ export class UserController {
     const user = await this.userService.removeTechnologyFromUser(currentUserId, technologyId);
 
     return this.userService.buildUserResponse(user);
+  }
+
+  @Post('google-auth')
+  async googleAuth(@Body('token') token: string, @Res({ passthrough: true }) response: Response) {
+    return await this.userService.loginWithGoogle(token, response);
   }
 }
