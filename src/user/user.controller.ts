@@ -679,4 +679,10 @@ export class UserController {
   async googleAuth(@Body('token') token: string, @Res({ passthrough: true }) response: Response): Promise<{ token: string }> {
     return await this.userService.loginWithGoogle(token, response);
   }
+
+  @UseGuards(AuthGuard)
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) response: Response): Promise<{ message: string }> {
+    return await this.userService.logoutUser(response);
+  }
 }

@@ -434,6 +434,13 @@ export class UserService {
     }
   }
 
+  async logoutUser(response: Response): Promise<{ message: string }> {
+    response.clearCookie('accessToken');
+    return {
+      message: 'Success',
+    };
+  }
+
   buildUserResponse(user: UserEntity): UserResponseInterface {
     return {
       user: {
