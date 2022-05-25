@@ -654,7 +654,7 @@ export class UserController {
   }
 
   @Post('google-auth')
-  async googleAuth(@Body('token') token: string, @Res({ passthrough: true }) response: Response) {
+  async googleAuth(@Body('token') token: string, @Res({ passthrough: true }) response: Response): Promise<{ token: string }> {
     return await this.userService.loginWithGoogle(token, response);
   }
 }
