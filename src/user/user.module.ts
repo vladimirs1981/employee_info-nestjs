@@ -9,9 +9,10 @@ import { TechnologyEntity } from '@app/technology/technology.entity';
 import { ProjectEntity } from '@app/project/project.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from '@app/user/guards/roles.guard';
+import { TokenEntity } from '@app/token/token.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, CityEntity, TechnologyEntity, ProjectEntity])],
+  imports: [TypeOrmModule.forFeature([UserEntity, CityEntity, TechnologyEntity, ProjectEntity, TokenEntity])],
   controllers: [UserController],
   providers: [
     UserService,

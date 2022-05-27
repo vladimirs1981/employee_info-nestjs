@@ -11,6 +11,7 @@ import { ProjectModule } from '@app/project/project.module';
 import { ProjectManagerModule } from '@app/projectManager/projectManager.module';
 import { NoteModule } from '@app/note/note.module';
 import ormconfig from '@app/ormconfig';
+import { TokenModule } from './token/token.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import ormconfig from '@app/ormconfig';
     ProjectModule,
     ProjectManagerModule,
     NoteModule,
+    TokenModule,
   ],
 })
 export class AppModule {

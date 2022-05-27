@@ -89,6 +89,9 @@ export class CountryService {
 
       const isNotInCountries = country.cities.findIndex(cityInCountry => cityInCountry.id === city.id) === -1;
 
+      // if (city.country !== null) {
+      //   throw new HttpException('City already has a country', HttpStatus.NOT_FOUND);
+      // }
       if (isNotInCountries) {
         country.cities.push(city);
         await this.countryRepository.save(country);
@@ -97,7 +100,7 @@ export class CountryService {
 
       return country;
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 
@@ -126,7 +129,7 @@ export class CountryService {
 
       return country;
     } catch (error) {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw error;
     }
   }
 

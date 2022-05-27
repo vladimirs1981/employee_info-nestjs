@@ -11,9 +11,10 @@ import { CityEntity } from '@app/city/city.entity';
 import { TechnologyEntity } from '@app/technology/technology.entity';
 import { ProjectEntity } from '@app/project/project.entity';
 import { PostgresErrorCode } from '@app/database/postgresErrorCodes.enum';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { sign } from 'jsonwebtoken';
+import { TokenEntity } from '@app/token/token.entity';
 
 @Injectable()
 export class UserService {
@@ -23,6 +24,7 @@ export class UserService {
     @InjectRepository(CityEntity) private readonly cityRepository: Repository<CityEntity>,
     @InjectRepository(TechnologyEntity) private readonly technologyRepository: Repository<TechnologyEntity>,
     @InjectRepository(ProjectEntity) private readonly projectRepository: Repository<ProjectEntity>,
+    @InjectRepository(TokenEntity) private readonly tokenRepository: Repository<TokenEntity>,
   ) {}
 
   async findAllUsers(): Promise<UserEntity[]> {
@@ -378,7 +380,16 @@ export class UserService {
       process.env.JWT_SECRET,
     );
 
+    const expiredAt: Date = new Date();
+    expiredAt.setDate(expiredAt.getDate() + 7);
+
     console.log(accessToken);
+
+    await this.tokenRepository.save({
+      userId: user.id,
+      token: accessToken,
+      expiredAt,
+    });
 
     response.status(200);
     response.cookie('accessToken', accessToken, {
@@ -434,7 +445,11 @@ export class UserService {
     }
   }
 
-  async logoutUser(response: Response): Promise<{ message: string }> {
+  async logoutUser(request: Request, response: Response): Promise<{ message: string }> {
+    const accessToken = request.cookies['accessToken'];
+
+    await this.tokenRepository.delete({ token: accessToken });
+
     response.clearCookie('accessToken');
     return {
       message: 'Success',

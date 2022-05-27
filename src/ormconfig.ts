@@ -27,4 +27,22 @@ const config: ConnectionOptions = {
   },
 };
 
+// const config: ConnectionOptions = {
+//   type: 'postgres',
+//   host: 'localhost',
+//   port: 5432,
+//   username: 'postgres',
+//   password: 'dovlas',
+//   database: 'employee_info',
+//   entities: [__dirname + '/**/*.entity{.ts,.js}'],
+//   synchronize: false,
+//   // ssl: {
+//   //   rejectUnauthorized: false,
+//   // },
+//   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+//   cli: {
+//     migrationsDir: 'src/migrations',
+//   },
+// };
+
 export default config;

@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Patch, Post, Put, UseGuards, UsePipes, ValidationPipe, ParseIntPipe, Param, Delete, Logger, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Get, Patch, Post, Put, UseGuards, UsePipes, ValidationPipe, ParseIntPipe, Param, Delete, Logger, Res, Req } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { UserService } from '@app/user/user.service';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
@@ -682,7 +682,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Post('logout')
-  async logout(@Res({ passthrough: true }) response: Response): Promise<{ message: string }> {
-    return await this.userService.logoutUser(response);
+  async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response): Promise<{ message: string }> {
+    return await this.userService.logoutUser(request, response);
   }
 }
